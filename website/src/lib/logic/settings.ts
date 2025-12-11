@@ -155,7 +155,7 @@ export const settings = {
     customBasemapOrder: new Setting<string[]>('customBasemapOrder', []),
     customOverlayOrder: new Setting<string[]>('customOverlayOrder', []),
     directionMarkers: new Setting('directionMarkers', false),
-    distanceMarkers: new Setting('distanceMarkers', false),
+    distanceMarkers: new Setting('distanceMarkers', true),
     streetViewSource: new Setting('streetViewSource', 'mapillary'),
     fileOrder: new Setting<string[]>('fileOrder', []),
     defaultOpacity: new Setting('defaultOpacity', 0.7),
