@@ -36,15 +36,26 @@ class Locale {
             if (!this._isLoading) {
                 this._isLoading = true;
             }
-            import(`../locales/${this._lang}.json`).then((module) => {
-                this.dictionary = module.default;
-                if (this._isLoadingInitial) {
-                    this._isLoadingInitial = false;
-                }
+            const modules = import.meta.glob('../locales/*.json');
+            const loadLocale = modules[`../locales/${this._lang}.json`];
+
+            if (loadLocale) {
+                loadLocale().then((module: any) => {
+                    this.dictionary = module.default;
+                    if (this._isLoadingInitial) {
+                        this._isLoadingInitial = false;
+                    }
+                    if (this._isLoading) {
+                        this._isLoading = false;
+                    }
+                });
+            } else {
+                console.error(`Locale file for ${this._lang} not found`);
+                // potentially handle fallback or error state
                 if (this._isLoading) {
                     this._isLoading = false;
                 }
-            });
+            }
         }
     }
 
