@@ -27,8 +27,12 @@ import ignFrTopo from './custom/ign-fr-topo.json';
 import ignFrPlan from './custom/ign-fr-plan.json';
 import ignFrSatellite from './custom/ign-fr-satellite.json';
 import bikerouterGravel from './custom/bikerouter-gravel.json';
+import { customBasemaps, customBasemapTree } from './custom-basemaps';
+import { customOverlays, customOverlayTree } from './custom-overlays';
+import { customOverpassQueries, customOverpassTree } from './custom-pois';
 
 export const basemaps: { [key: string]: string | StyleSpecification } = {
+    ...customBasemaps,
     mapboxOutdoors: 'mapbox://styles/mapbox/outdoors-v12',
     mapboxSatellite: 'mapbox://styles/mapbox/satellite-streets-v12',
     openStreetMap: {
@@ -343,6 +347,7 @@ export const basemaps: { [key: string]: string | StyleSpecification } = {
 };
 
 export const overlays: { [key: string]: string | StyleSpecification } = {
+    ...customOverlays,
     cyclOSMlite: {
         version: 8,
         sources: {
@@ -736,6 +741,7 @@ export type LayerTreeType = { [key: string]: LayerTreeType | boolean };
 // Hierarchy containing all basemaps
 export const basemapTree: LayerTreeType = {
     basemaps: {
+        ...customBasemapTree,
         world: {
             mapboxOutdoors: true,
             mapboxSatellite: true,
@@ -790,6 +796,7 @@ export const basemapTree: LayerTreeType = {
 // Hierarchy containing all overlays
 export const overlayTree: LayerTreeType = {
     overlays: {
+        ...customOverlayTree,
         world: {
             waymarked_trails: {
                 waymarkedTrailsHiking: true,
@@ -955,6 +962,7 @@ export const defaultOverpassQueries: LayerTreeType = {
 // Default basemaps shown in the layer menu
 export const defaultBasemapTree: LayerTreeType = {
     basemaps: {
+        ...customBasemapTree,
         world: {
             mapboxOutdoors: true,
             mapboxSatellite: true,
@@ -1009,6 +1017,7 @@ export const defaultBasemapTree: LayerTreeType = {
 // Default overlays shown in the layer menu
 export const defaultOverlayTree: LayerTreeType = {
     overlays: {
+        ...customOverlayTree,
         world: {
             waymarked_trails: {
                 waymarkedTrailsHiking: true,
@@ -1044,6 +1053,7 @@ export const defaultOverlayTree: LayerTreeType = {
 // Default Overpass queries shown in the layer menu
 export const defaultOverpassTree: LayerTreeType = {
     points_of_interest: {
+        ...customOverpassTree,
         food: {
             bakery: true,
             'food-store': true,
@@ -1097,7 +1107,7 @@ export type CustomLayer = {
     value: string | {};
 };
 
-type OverpassQueryData = {
+export type OverpassQueryData = {
     icon: {
         svg: string;
         color: string;
@@ -1107,6 +1117,7 @@ type OverpassQueryData = {
 };
 
 export const overpassQueryData: Record<string, OverpassQueryData> = {
+    ...customOverpassQueries,
     bakery: {
         icon: {
             svg: Croissant,

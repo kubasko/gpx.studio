@@ -55,7 +55,7 @@
                             value={id}
                             bind:checked={checked[id]}
                             class="scale-90"
-                            aria-label={i18n._(`layers.label.${id}`)}
+                            aria-label={i18n._(`layers.label.${id}`, id)}
                         />
                     {:else}
                         <input
@@ -77,7 +77,7 @@
                         {:else if $isLayerFromExtension(id)}
                             {$getLayerName(id)}
                         {:else}
-                            {i18n._(`layers.label.${id}`)}
+                            {i18n._(`layers.label.${id}`, id)}
                         {/if}
                     </Label>
                 </div>
