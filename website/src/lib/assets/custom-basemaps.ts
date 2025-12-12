@@ -90,7 +90,7 @@ export const customBasemaps: { [key: string]: string | StyleSpecification } = {
 };
 
 export const customBasemapTree: LayerTreeType = {
-    mapy_cz: {
+    'Mapy.com': {
         mapyBasic: true,
         mapyOutdoor: true,
         mapyWinter: true,

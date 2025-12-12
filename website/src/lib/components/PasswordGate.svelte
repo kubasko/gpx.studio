@@ -14,7 +14,13 @@
         type AccessLevel,
     } from '$lib/auth';
 
-    let { children }: { children: Snippet } = $props();
+    let {
+        children,
+        onAuthenticated = () => {},
+    }: {
+        children: Snippet;
+        onAuthenticated?: () => void;
+    } = $props();
 
     let isAuthenticated = $state(false);
     let password = $state('');
@@ -49,6 +55,7 @@
             isAuthenticated = true;
             accessLevel = level;
             error = '';
+            onAuthenticated();
         } else {
             error = 'Incorrect password';
         }

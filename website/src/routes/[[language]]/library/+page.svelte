@@ -146,11 +146,27 @@
         canWrite = hasWriteAccess();
     });
 
+    function handleAuthChange() {
+        // Re-check write access when authentication changes
+        canWrite = hasWriteAccess();
+    }
+
     function getOpenLink(item: LibraryItem) {
         // Use relative path for shorter links
         const fileUrl = `/gpx/${item.filename}`;
         const params = new URLSearchParams();
         params.set('files', JSON.stringify([fileUrl]));
+
+        // Include style metadata if set
+        if (item.style) {
+            const metadata = {
+                [item.filename]: {
+                    style: item.style,
+                },
+            };
+            params.set('metadata', JSON.stringify(metadata));
+        }
+
         return getURLForLanguage(i18n.lang, `/app?${params.toString()}`);
     }
 
@@ -183,7 +199,7 @@
     }
 </script>
 
-<PasswordGate>
+<PasswordGate onAuthenticated={handleAuthChange}>
     <div class="container mx-auto py-8 px-4">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <h1 class="text-3xl font-bold">Library</h1>

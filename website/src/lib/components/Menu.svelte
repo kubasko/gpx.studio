@@ -53,6 +53,7 @@
     import { defaultOverlays } from '$lib/assets/layers';
     import LayerControlSettings from '$lib/components/map/layer-control/LayerControlSettings.svelte';
     import { ListFileItem, ListTrackItem } from '$lib/components/file-list/file-list';
+    import SaveToLibraryModal from '$lib/components/library/SaveToLibraryModal.svelte';
     import Export from '$lib/components/export/Export.svelte';
     import { mode, setMode } from 'mode-watcher';
     import { i18n } from '$lib/i18n.svelte';
@@ -107,6 +108,7 @@
     }
 
     let layerSettingsOpen = $state(false);
+    let saveToLibraryOpen = $state(false);
 </script>
 
 <div class="absolute md:top-2 left-0 right-0 z-20 flex flex-row justify-center pointer-events-none">
@@ -181,6 +183,14 @@
                         <Download size="16" />
                         {i18n._('menu.export_all')}
                         <Shortcut key="S" ctrl={true} shift={true} />
+                    </Menubar.Item>
+                    <Menubar.Separator />
+                    <Menubar.Item
+                        onclick={() => (saveToLibraryOpen = true)}
+                        disabled={fileStateCollection.size == 0}
+                    >
+                        <Library size="16" />
+                        Save to Library
                     </Menubar.Item>
                 </Menubar.Content>
             </Menubar.Menu>
@@ -673,6 +683,8 @@
         }
     }}
 />
+
+<SaveToLibraryModal bind:open={saveToLibraryOpen} />
 
 <style lang="postcss">
     @reference "../../app.css";

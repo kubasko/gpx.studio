@@ -8,6 +8,12 @@ export default defineConfig({
     ssr: {
         noExternal: ['gpx'],
     },
+    server: {
+        watch: {
+            // Ignore changes to static/gpx to prevent page reloads when library.json changes
+            ignored: ['**/static/gpx/**'],
+        },
+    },
     plugins: [
         nodePolyfills({
             globals: {
