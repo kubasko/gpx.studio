@@ -88,11 +88,28 @@ export function triggerFileInput() {
     input.click();
 }
 
-export async function loadFiles(list: FileList | File[]) {
+export async function loadFiles(list: FileList | File[], metadata?: Record<string, any>) {
     let files: GPXFile[] = [];
     for (let i = 0; i < list.length; i++) {
         let file = await loadFile(list[i]);
         if (file) {
+            // Apply metadata if present
+            if (metadata && metadata[list[i].name]) {
+                const meta = metadata[list[i].name];
+                if (meta.description) {
+                    file.metadata.desc = meta.description;
+                    if (file.trk.length === 1) {
+                        file.trk[0].desc = meta.description;
+                    }
+                }
+                if (meta.style) {
+                    const style: LineStyleExtension = {};
+                    if (meta.style.color) style['gpx_style:color'] = meta.style.color;
+                    if (meta.style.opacity) style['gpx_style:opacity'] = meta.style.opacity;
+                    if (meta.style.width) style['gpx_style:width'] = meta.style.width;
+                    file.setStyle(style);
+                }
+            }
             files.push(file);
         }
     }
@@ -145,6 +162,14 @@ export const fileActions = {
         });
         return ids;
     },
+    clearAll: () => {
+        fileActionManager.applyGlobal((draft) => {
+            Array.from(draft.keys()).forEach((fileId) => {
+                draft.delete(fileId);
+            });
+        });
+    },
+
     duplicateSelection: () => {
         if (get(selection).size === 0) {
             return;

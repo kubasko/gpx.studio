@@ -54,10 +54,12 @@ export class BoundsManager {
         this._files.delete(fileId);
 
         const bounds = file.statistics.getStatisticsFor(new ListFileItem(fileId)).global.bounds;
-        if (!this.validBounds(bounds)) return;
-
-        this._bounds.extend(bounds.southWest);
-        this._bounds.extend(bounds.northEast);
+        if (this.validBounds(bounds)) {
+            this._bounds.extend(bounds.southWest);
+            this._bounds.extend(bounds.northEast);
+        } else {
+            console.warn('[BoundsManager] Invalid bounds for file:', fileId, bounds);
+        }
 
         if (this._files.size === 0) {
             this.finalizeFitBounds();
@@ -75,7 +77,7 @@ export class BoundsManager {
         this._unsubscribes.push(
             map.subscribe((map_) => {
                 if (!map_) return;
-                map_.fitBounds(this._bounds, { padding: 80, linear: true, easing: () => 1 });
+                map_.fitBounds(this._bounds, { padding: 40, linear: true, easing: () => 1 });
                 this.reset();
             })
         );

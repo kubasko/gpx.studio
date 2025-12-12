@@ -14,6 +14,7 @@
         PenLine,
         Route,
         Scale,
+        Library,
     } from '@lucide/svelte';
     import { i18n } from '$lib/i18n.svelte';
     import { getURLForLanguage } from '$lib/utils';
@@ -71,6 +72,14 @@
                     >
                         <Map size="18" />
                         {i18n._('homepage.app')}
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        href={getURLForLanguage(i18n.lang, '/library')}
+                        class="w-1/3 min-w-fit"
+                    >
+                        <Library size="18" />
+                        <span>Library</span>
                     </Button>
                     <Button
                         variant="secondary"

@@ -43,6 +43,7 @@
         BookOpenText,
         ChartArea,
         Maximize,
+        Library,
     } from '@lucide/svelte';
     import { map } from '$lib/components/map/map';
     import { editMetadata } from '$lib/components/file-list/metadata/utils.svelte';
@@ -57,6 +58,7 @@
     import { i18n } from '$lib/i18n.svelte';
     import { languages } from '$lib/languages';
     import { getURLForLanguage } from '$lib/utils';
+    import { goto } from '$app/navigation';
     import { settings } from '$lib/logic/settings';
     import {
         createFile,
@@ -134,6 +136,10 @@
                         <Shortcut key="O" ctrl={true} />
                     </Menubar.Item>
                     <Menubar.Separator />
+                    <Menubar.Item onclick={() => goto(getURLForLanguage(i18n.lang, '/library'))}>
+                        <Library size="16" />
+                        Library
+                    </Menubar.Item>
                     <Menubar.Item
                         onclick={fileActions.duplicateSelection}
                         disabled={$selection.size == 0}

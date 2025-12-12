@@ -3,7 +3,7 @@
     import { Button } from '$lib/components/ui/button';
     import AlgoliaDocSearch from '$lib/components/AlgoliaDocSearch.svelte';
     import ModeSwitch from '$lib/components/ModeSwitch.svelte';
-    import { BookOpenText, House, Map } from '@lucide/svelte';
+    import { BookOpenText, House, Map, LibraryBig } from '@lucide/svelte';
     import { i18n } from '$lib/i18n.svelte';
     import { getURLForLanguage } from '$lib/utils';
 </script>
@@ -30,6 +30,14 @@
         >
             <Map size="18" />
             {i18n._('homepage.app')}
+        </Button>
+        <Button
+            variant="link"
+            class="text-base px-0 has-[>svg]:px-0"
+            href={getURLForLanguage(i18n.lang, '/library')}
+        >
+            <LibraryBig size="18" />
+            Library
         </Button>
         <Button
             variant="link"
