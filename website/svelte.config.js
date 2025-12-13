@@ -22,6 +22,9 @@ const config = {
         prerender: {
             crawl: true,
         },
+        csrf: {
+            checkOrigin: false,
+        },
     },
 };
 
