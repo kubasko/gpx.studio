@@ -2,9 +2,10 @@ import { json } from '@sveltejs/kit';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { PUBLIC_READ_PASSWORD, PUBLIC_WRITE_PASSWORD } from '$env/static/public';
+import { dev } from '$app/environment';
 
-const IMAGES_DIR = 'static/gpx/images';
-const LIBRARY_DIR = 'static/gpx';
+const LIBRARY_DIR = dev ? 'static/gpx' : 'build/client/gpx';
+const IMAGES_DIR = path.join(LIBRARY_DIR, 'images');
 const DB_FILE = path.join(LIBRARY_DIR, 'library.json');
 
 // Check if request has write access
