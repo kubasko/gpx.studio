@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { mdsvex } from 'mdsvex';
 
@@ -13,10 +13,7 @@ const config = {
     preprocess: [vitePreprocess({ script: true }), mdsvex(mdsvexOptions)],
     kit: {
         adapter: adapter({
-            pages: 'build',
-            assets: 'build',
-            precompress: false,
-            strict: true,
+            out: 'build',
         }),
         paths: {
             base: process.argv.includes('dev') ? '' : process.env.BASE_PATH,
