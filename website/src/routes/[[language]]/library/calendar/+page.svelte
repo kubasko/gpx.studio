@@ -12,8 +12,7 @@
         Calendar as CalendarIcon,
         List,
     } from '@lucide/svelte';
-    import { hasReadAccess, isPasswordProtectionEnabled } from '$lib/auth';
-    import Login from '$lib/components/Login.svelte';
+    import PasswordGate from '$lib/components/PasswordGate.svelte';
 
     type LibraryItem = {
         id: string;
@@ -39,15 +38,7 @@
     let currentDate = $state(new Date());
     let viewMode = $state<'month' | 'year'>('month');
 
-    // Auth state
-    let needsAuth = $state(false);
-
     onMount(async () => {
-        if (isPasswordProtectionEnabled() && !hasReadAccess()) {
-            needsAuth = true;
-            loading = false;
-            return;
-        }
         await loadItems();
     });
 
@@ -64,12 +55,6 @@
         } finally {
             loading = false;
         }
-    }
-
-    function handleAuthSuccess() {
-        needsAuth = false;
-        loading = true;
-        loadItems();
     }
 
     // Get display name
@@ -173,11 +158,7 @@
     <title>Race Calendar | Library</title>
 </svelte:head>
 
-{#if needsAuth}
-    <div class="min-h-screen flex items-center justify-center bg-background">
-        <Login onSuccess={handleAuthSuccess} />
-    </div>
-{:else}
+<PasswordGate>
     <div class="min-h-screen bg-background">
         <div class="container mx-auto py-6 px-4 max-w-6xl">
             <!-- Header -->
@@ -418,4 +399,4 @@
             {/if}
         </div>
     </div>
-{/if}
+</PasswordGate>
