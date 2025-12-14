@@ -2,7 +2,7 @@
   {
     "id": "354ff30c-1f21-4f93-9a06-85d83e30f131",
     "name": "PGR2026_2025.10.29.gpx",
-    "filename": "1765746541944_1765488017065_pgr2026_2025.10.29.gpx",
+    "filename": "1765746775446_1765488017065_pgr2026_2025.10.29.gpx",
     "tags": [
       "PGR",
       "2026"
@@ -69,13 +69,13 @@
       }
     ],
     "distance": 566,
-    "elevation": 11513,
+    "elevation": 11824,
     "country": "Polska"
   },
   {
     "id": "f2d3e3c4-6096-4ca1-b7f0-e6f91b8c8fdc",
     "name": "PROZIAK300_2025_-_FINAL.gpx",
-    "filename": "1765737957112_proziak300_2025___final.gpx",
+    "filename": "1765746967159_proziak300_2025___final.gpx",
     "tags": [
       "Proziak",
       "2025"
@@ -94,12 +94,15 @@
     "raceTips": "",
     "imageSize": "medium",
     "mediaLinks": [],
-    "category": "cycling"
+    "category": "cycling",
+    "distance": 316.9,
+    "elevation": 5870,
+    "country": "Polska"
   },
   {
     "id": "3cf9aab1-e779-4080-a65c-ba227c1625ce",
     "name": "PROZIAK500_2025_-_FINAL.gpx",
-    "filename": "1765737980001_proziak500_2025___final.gpx",
+    "filename": "1765746881483_proziak500_2025___final.gpx",
     "tags": [
       "Proziak",
       "2025"
@@ -118,7 +121,10 @@
     "raceTips": "",
     "imageSize": "medium",
     "mediaLinks": [],
-    "category": "cycling"
+    "category": "cycling",
+    "distance": 506.7,
+    "elevation": 9289,
+    "country": "Polska"
   },
   {
     "id": "4867b098-8ef1-4628-a113-45c51d786536",
@@ -231,7 +237,7 @@
   {
     "id": "0fd4c7a1-353d-47b5-9714-b718335782c0",
     "name": "Testowy bez gpx",
-    "filename": "1765746600753_2025_10_11_1863241100_lemkowyna_trail_150_2025.gpx",
+    "filename": "1765746808508_2025_10_11_1863241100_lemkowyna_trail_150_2025.gpx",
     "tags": [
       "Łemkowyna",
       "2025"
@@ -260,7 +266,7 @@
       }
     ],
     "distance": 149.5,
-    "elevation": 4649,
+    "elevation": 4683,
     "country": "Polska",
     "image": "0fd4c7a1-353d-47b5-9714-b718335782c0-1765740860147.jpeg",
     "raceWebpage": "https://www.ultralemkowyna.pl/trasy/lemkowyna-trail-150",

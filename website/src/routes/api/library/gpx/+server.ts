@@ -120,17 +120,33 @@ function parseGpxStats(gpxContent: string) {
     // 1. Prepare points with accumulated distance
     const points: Point[] = [];
     let currentDist = 0;
-    points.push({ ...rawPoints[0], dist: 0, index: 0 });
 
-    for (let i = 1; i < rawPoints.length; i++) {
+    // Filter raw points:
+    // 1. Must have valid latitude/longitude
+    // 2. Must have valid elevation (otherwise we get drops to 0)
+    // 3. Remove duplicates (0 distance)
+
+    let validPoints = rawPoints.filter((p) => p.ele !== null && !isNaN(p.lat) && !isNaN(p.lon));
+
+    if (validPoints.length === 0) {
+        return { distance: 0, elevation: 0, firstPoint: null };
+    }
+
+    points.push({ ...validPoints[0], dist: 0, index: 0 });
+
+    for (let i = 1; i < validPoints.length; i++) {
         const d = haversineDistance(
-            rawPoints[i - 1].lat,
-            rawPoints[i - 1].lon,
-            rawPoints[i].lat,
-            rawPoints[i].lon
+            validPoints[i - 1].lat,
+            validPoints[i - 1].lon,
+            validPoints[i].lat,
+            validPoints[i].lon
         );
-        currentDist += d;
-        points.push({ ...rawPoints[i], dist: currentDist, index: i });
+
+        // Ignore tiny movements (< 1cm) to avoid accumulation of float noise or duplicates
+        if (d > 0.00001) {
+            currentDist += d;
+            points.push({ ...validPoints[i], dist: currentDist, index: points.length });
+        }
     }
     totalDistance = currentDist;
 
