@@ -232,7 +232,10 @@
     "id": "0fd4c7a1-353d-47b5-9714-b718335782c0",
     "name": "Testowy bez gpx",
     "filename": "1765740504280_2025_10_11_1863241100_lemkowyna_trail_150_2025.gpx",
-    "tags": [],
+    "tags": [
+      "Łemkowyna",
+      "2025"
+    ],
     "date": "2025-12-14T19:23:31.165Z",
     "customName": "Łemkowyna Trail 150",
     "description": "",
@@ -243,14 +246,25 @@
     },
     "category": "running",
     "isRace": true,
-    "raceStartDate": "2026-01-01",
-    "raceEndDate": "2026-01-18",
-    "raceTips": "",
+    "raceStartDate": "2025-10-17",
+    "raceEndDate": "2025-10-18",
+    "raceTips": "Run Forest Run",
     "imageSize": "medium",
-    "mediaLinks": [],
+    "mediaLinks": [
+      {
+        "id": "b9a6817d-914e-4f7b-8b6c-78828476ae8a",
+        "type": "story",
+        "url": "https://natural-born-runners.pl/Lemkowyna-Ultra-Trail-co-zabrac-na-trase-blog-pol-1568803551.html",
+        "title": "Łemkowyna Ultra Trail - co zabrać na trasę?",
+        "publishDate": "2025-10-01"
+      }
+    ],
     "distance": 149.5,
     "elevation": 4721,
     "country": "Polska",
-    "image": "0fd4c7a1-353d-47b5-9714-b718335782c0-1765740860147.jpeg"
+    "image": "0fd4c7a1-353d-47b5-9714-b718335782c0-1765740860147.jpeg",
+    "raceWebpage": "https://www.ultralemkowyna.pl/trasy/lemkowyna-trail-150",
+    "raceResultsUrl": "https://www.ultralemkowyna.pl/wyniki",
+    "raceTrackerUrl": "https://poltrax.pl/lemko150"
   }
 ]

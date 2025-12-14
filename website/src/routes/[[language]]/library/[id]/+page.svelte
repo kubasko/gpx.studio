@@ -185,6 +185,12 @@
                             Live Tracker
                         </Button>
                     {/if}
+                    {#if item.raceResultsUrl}
+                        <Button variant="outline" href={item.raceResultsUrl} target="_blank">
+                            <Medal size="16" class="mr-2 text-amber-500" />
+                            Results
+                        </Button>
+                    {/if}
                 </div>
             </div>
 
@@ -294,7 +300,7 @@
             {/if}
 
             <!-- Additional Info -->
-            {#if item.description || item.raceTips || item.raceResultsUrl || item.raceTrackerUrl || (item.mediaLinks && item.mediaLinks.length > 0)}
+            {#if item.description || item.raceTips || (item.mediaLinks && item.mediaLinks.length > 0)}
                 <div class="grid md:grid-cols-2 gap-6">
                     <!-- Left Column: Description and Race Tips -->
                     <div class="space-y-6">
@@ -319,37 +325,6 @@
                                     class="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900"
                                 >
                                     <p class="text-sm whitespace-pre-wrap">{item.raceTips}</p>
-                                </div>
-                            </div>
-                        {/if}
-
-                        <!-- Race Links -->
-                        {#if item.raceResultsUrl || item.raceTrackerUrl}
-                            <div class="space-y-2">
-                                <h3 class="font-semibold">Race Links</h3>
-                                <div class="flex flex-col gap-2">
-                                    {#if item.raceResultsUrl}
-                                        <a
-                                            href={item.raceResultsUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
-                                        >
-                                            <Medal size="16" class="text-amber-500" />
-                                            <span>View Results</span>
-                                        </a>
-                                    {/if}
-                                    {#if item.raceTrackerUrl}
-                                        <a
-                                            href={item.raceTrackerUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
-                                        >
-                                            <Radio size="16" class="text-green-500" />
-                                            <span>Live Tracker</span>
-                                        </a>
-                                    {/if}
                                 </div>
                             </div>
                         {/if}
