@@ -358,16 +358,16 @@
                                 <Download size="14" class="mr-1" />
                                 Download
                             </Button>
-                            <label class="cursor-pointer">
-                                <Button variant="outline" size="sm" class="pointer-events-none">
-                                    {#if gpxUploading}
-                                        <Loader2 size="14" class="mr-1 animate-spin" />
-                                        Uploading...
-                                    {:else}
-                                        <FileUp size="14" class="mr-1" />
-                                        Replace
-                                    {/if}
-                                </Button>
+                            <label
+                                class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                            >
+                                {#if gpxUploading}
+                                    <Loader2 size="14" class="animate-spin" />
+                                    Uploading...
+                                {:else}
+                                    <FileUp size="14" />
+                                    Replace
+                                {/if}
                                 <input
                                     type="file"
                                     class="hidden"

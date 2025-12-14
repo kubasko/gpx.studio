@@ -203,7 +203,7 @@
   {
     "id": "0fd4c7a1-353d-47b5-9714-b718335782c0",
     "name": "Testowy bez gpx",
-    "filename": "",
+    "filename": "1765740504280_2025_10_11_1863241100_lemkowyna_trail_150_2025.gpx",
     "tags": [],
     "date": "2025-12-14T19:23:31.165Z",
     "customName": "Testowy bez gpx",
@@ -219,6 +219,9 @@
     "raceEndDate": "2026-01-18",
     "raceTips": "",
     "imageSize": "medium",
-    "mediaLinks": []
+    "mediaLinks": [],
+    "distance": 149.5,
+    "elevation": 4721,
+    "country": "Polska"
   }
 ]
