@@ -358,7 +358,7 @@
                 {#if filteredItems.length === 0}
                     <div class="text-center text-muted-foreground py-12">No files found.</div>
                 {:else}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {#each filteredItems as item}
                             <div
                                 class="border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-card flex flex-col overflow-hidden"
@@ -398,7 +398,7 @@
                                                 />
                                             {/if}
                                             <h3
-                                                class="font-semibold text-sm truncate"
+                                                class="font-semibold text-base truncate"
                                                 title={getDisplayName(item)}
                                             >
                                                 {getDisplayName(item)}
