@@ -178,6 +178,12 @@
                             Race Website
                         </Button>
                     {/if}
+                    {#if item.raceTrackerUrl}
+                        <Button variant="outline" href={item.raceTrackerUrl} target="_blank">
+                            <Radio size="16" class="mr-2 text-green-500" />
+                            Live Tracker
+                        </Button>
+                    {/if}
                 </div>
             </div>
 
