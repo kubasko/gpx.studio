@@ -1,13 +1,13 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import { Button } from '$lib/components/ui/button';
-    import { 
-        ArrowLeft, 
-        ArrowRight, 
+    import {
+        ArrowLeft,
+        ArrowRight,
         ChevronLeft,
         ChevronRight,
-        Bike, 
-        Footprints, 
+        Bike,
+        Footprints,
         Trophy,
         Calendar as CalendarIcon,
         List,
@@ -38,7 +38,7 @@
     let loading = $state(true);
     let currentDate = $state(new Date());
     let viewMode = $state<'month' | 'year'>('month');
-    
+
     // Auth state
     let needsAuth = $state(false);
 
@@ -93,7 +93,7 @@
     // Get events for a specific date
     function getEventsForDate(date: Date): LibraryItem[] {
         const dateStr = date.toISOString().split('T')[0];
-        return items.filter(item => {
+        return items.filter((item) => {
             if (!item.raceStartDate) return false;
             const startDate = item.raceStartDate;
             const endDate = item.raceEndDate || startDate;
@@ -104,7 +104,7 @@
     // Get events for a specific month
     function getEventsForMonth(year: number, month: number): LibraryItem[] {
         const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
-        return items.filter(item => {
+        return items.filter((item) => {
             if (!item.raceStartDate) return false;
             return item.raceStartDate.startsWith(monthStr);
         });
@@ -137,19 +137,19 @@
         const month = currentDate.getMonth();
         const daysInMonth = getDaysInMonth(year, month);
         const firstDay = getFirstDayOfMonth(year, month);
-        
+
         const days: (number | null)[] = [];
-        
+
         // Add empty cells for days before the first of the month
         for (let i = 0; i < firstDay; i++) {
             days.push(null);
         }
-        
+
         // Add days of the month
         for (let i = 1; i <= daysInMonth; i++) {
             days.push(i);
         }
-        
+
         return days;
     }
 
@@ -196,22 +196,20 @@
                         </p>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onclick={goToToday}>
-                        Today
-                    </Button>
-                    <Button 
-                        variant={viewMode === 'month' ? 'default' : 'outline'} 
+                    <Button variant="outline" size="sm" onclick={goToToday}>Today</Button>
+                    <Button
+                        variant={viewMode === 'month' ? 'default' : 'outline'}
                         size="sm"
-                        onclick={() => viewMode = 'month'}
+                        onclick={() => (viewMode = 'month')}
                     >
                         Month
                     </Button>
-                    <Button 
-                        variant={viewMode === 'year' ? 'default' : 'outline'} 
+                    <Button
+                        variant={viewMode === 'year' ? 'default' : 'outline'}
                         size="sm"
-                        onclick={() => viewMode = 'year'}
+                        onclick={() => (viewMode = 'year')}
                     >
                         Year
                     </Button>
@@ -231,7 +229,8 @@
                             <ChevronLeft size="20" />
                         </Button>
                         <h2 class="text-xl font-semibold">
-                            {monthName} {year}
+                            {monthName}
+                            {year}
                         </h2>
                         <Button variant="ghost" size="icon" onclick={nextMonth}>
                             <ChevronRight size="20" />
@@ -253,20 +252,35 @@
                             {#if day === null}
                                 <div class="h-24 bg-muted/20 rounded"></div>
                             {:else}
-                                {@const dateObj = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)}
+                                {@const dateObj = new Date(
+                                    currentDate.getFullYear(),
+                                    currentDate.getMonth(),
+                                    day
+                                )}
                                 {@const events = getEventsForDate(dateObj)}
-                                <div 
-                                    class="h-24 border rounded p-1 overflow-hidden hover:bg-muted/50 transition-colors {isToday(day) ? 'border-primary border-2' : ''}"
+                                <div
+                                    class="h-24 border rounded p-1 overflow-hidden hover:bg-muted/50 transition-colors {isToday(
+                                        day
+                                    )
+                                        ? 'border-primary border-2'
+                                        : ''}"
                                 >
-                                    <div class="text-sm font-medium mb-1 {isToday(day) ? 'text-primary' : 'text-muted-foreground'}">
+                                    <div
+                                        class="text-sm font-medium mb-1 {isToday(day)
+                                            ? 'text-primary'
+                                            : 'text-muted-foreground'}"
+                                    >
                                         {day}
                                     </div>
                                     <div class="space-y-0.5 overflow-hidden">
                                         {#each events.slice(0, 2) as event}
-                                            <a 
-                                                href="/library/{event.id}" 
+                                            <a
+                                                href="/library/{event.id}"
                                                 target="_blank"
-                                                class="block text-xs px-1 py-0.5 rounded truncate hover:opacity-80 {event.category === 'cycling' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'}"
+                                                class="block text-xs px-1 py-0.5 rounded truncate hover:opacity-80 {event.category ===
+                                                'cycling'
+                                                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                                                    : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'}"
                                             >
                                                 {getDisplayName(event)}
                                             </a>
@@ -300,8 +314,11 @@
                     <div class="grid grid-cols-3 md:grid-cols-4 gap-4">
                         {#each Array(12) as _, month}
                             {@const events = getEventsForMonth(year, month)}
-                            <button 
-                                class="p-4 rounded-lg border hover:bg-muted/50 transition-colors text-left {events.length > 0 ? 'border-primary' : ''}"
+                            <button
+                                class="p-4 rounded-lg border hover:bg-muted/50 transition-colors text-left {events.length >
+                                0
+                                    ? 'border-primary'
+                                    : ''}"
                                 onclick={() => {
                                     currentDate = new Date(year, month, 1);
                                     viewMode = 'month';
@@ -316,11 +333,18 @@
                                         {#each events.slice(0, 3) as event}
                                             <div class="text-xs truncate flex items-center gap-1">
                                                 {#if event.category === 'cycling'}
-                                                    <Bike size="10" class="text-blue-500 shrink-0" />
+                                                    <Bike
+                                                        size="10"
+                                                        class="text-blue-500 shrink-0"
+                                                    />
                                                 {:else}
-                                                    <Footprints size="10" class="text-green-500 shrink-0" />
+                                                    <Footprints
+                                                        size="10"
+                                                        class="text-green-500 shrink-0"
+                                                    />
                                                 {/if}
-                                                <span class="truncate">{getDisplayName(event)}</span>
+                                                <span class="truncate">{getDisplayName(event)}</span
+                                                >
                                             </div>
                                         {/each}
                                         {#if events.length > 3}
@@ -341,8 +365,11 @@
             <!-- Upcoming Races List -->
             {#if !loading}
                 {@const today = new Date().toISOString().split('T')[0]}
-                {@const upcomingRaces = items.filter(i => i.raceStartDate && i.raceStartDate >= today).sort((a, b) => (a.raceStartDate || '').localeCompare(b.raceStartDate || '')).slice(0, 5)}
-                
+                {@const upcomingRaces = items
+                    .filter((i) => i.raceStartDate && i.raceStartDate >= today)
+                    .sort((a, b) => (a.raceStartDate || '').localeCompare(b.raceStartDate || ''))
+                    .slice(0, 5)}
+
                 {#if upcomingRaces.length > 0}
                     <div class="mt-6 rounded-lg border bg-card p-6">
                         <h3 class="font-semibold mb-4 flex items-center gap-2">
@@ -351,7 +378,7 @@
                         </h3>
                         <div class="space-y-3">
                             {#each upcomingRaces as race}
-                                <a 
+                                <a
                                     href="/library/{race.id}"
                                     target="_blank"
                                     class="flex items-center gap-4 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
@@ -361,7 +388,9 @@
                                             {new Date(race.raceStartDate + 'T00:00:00').getDate()}
                                         </div>
                                         <div class="text-xs text-muted-foreground uppercase">
-                                            {new Date(race.raceStartDate + 'T00:00:00').toLocaleString('default', { month: 'short' })}
+                                            {new Date(
+                                                race.raceStartDate + 'T00:00:00'
+                                            ).toLocaleString('default', { month: 'short' })}
                                         </div>
                                     </div>
                                     <div class="flex-1 min-w-0">
@@ -369,7 +398,10 @@
                                             {#if race.category === 'cycling'}
                                                 <Bike size="14" class="text-blue-500 shrink-0" />
                                             {:else}
-                                                <Footprints size="14" class="text-green-500 shrink-0" />
+                                                <Footprints
+                                                    size="14"
+                                                    class="text-green-500 shrink-0"
+                                                />
                                             {/if}
                                             {getDisplayName(race)}
                                         </div>
@@ -387,4 +419,3 @@
         </div>
     </div>
 {/if}
-</script>
