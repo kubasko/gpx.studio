@@ -358,7 +358,7 @@
                 {#if filteredItems.length === 0}
                     <div class="text-center text-muted-foreground py-12">No files found.</div>
                 {:else}
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {#each filteredItems as item}
                             <div
                                 class="border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-card flex flex-col overflow-hidden"
@@ -395,20 +395,6 @@
                                                     size="14"
                                                     class="text-amber-500 shrink-0"
                                                     title="Race"
-                                                />
-                                            {/if}
-                                            {#if item.mediaLinks?.some((l) => l.type === 'story')}
-                                                <BookOpen
-                                                    size="14"
-                                                    class="text-blue-500 shrink-0"
-                                                    title="Has Story"
-                                                />
-                                            {/if}
-                                            {#if item.mediaLinks?.some((l) => l.type === 'movie')}
-                                                <Film
-                                                    size="14"
-                                                    class="text-purple-500 shrink-0"
-                                                    title="Has Movie"
                                                 />
                                             {/if}
                                             <h3
