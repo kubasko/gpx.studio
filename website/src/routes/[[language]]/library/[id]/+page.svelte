@@ -181,6 +181,91 @@
                 </div>
             </div>
 
+            <!-- Hero Section with Image and Stats -->
+            <div class="mb-6 rounded-lg border bg-card overflow-hidden">
+                <div class="flex flex-col md:flex-row">
+                    <!-- Image -->
+                    {#if item.image}
+                        <div class="w-full md:w-64 h-48 md:h-auto shrink-0">
+                            <img
+                                src="/api/gpx/images/{item.image}"
+                                alt={getDisplayName(item)}
+                                class="w-full h-full object-cover"
+                            />
+                        </div>
+                    {/if}
+
+                    <!-- Stats -->
+                    <div class="flex-1 p-6">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {#if item.distance}
+                                <div class="text-center p-4 rounded-lg bg-muted/50">
+                                    <Route size="24" class="mx-auto mb-2 text-primary" />
+                                    <p class="text-2xl font-bold">{item.distance}</p>
+                                    <p
+                                        class="text-xs text-muted-foreground uppercase tracking-wide"
+                                    >
+                                        km
+                                    </p>
+                                </div>
+                            {/if}
+                            {#if item.elevation}
+                                <div class="text-center p-4 rounded-lg bg-muted/50">
+                                    <Mountain size="24" class="mx-auto mb-2 text-primary" />
+                                    <p class="text-2xl font-bold">{item.elevation}</p>
+                                    <p
+                                        class="text-xs text-muted-foreground uppercase tracking-wide"
+                                    >
+                                        m elevation
+                                    </p>
+                                </div>
+                            {/if}
+                            {#if item.country}
+                                <div class="text-center p-4 rounded-lg bg-muted/50">
+                                    <MapPin size="24" class="mx-auto mb-2 text-primary" />
+                                    <p class="text-lg font-semibold">{item.country}</p>
+                                    <p
+                                        class="text-xs text-muted-foreground uppercase tracking-wide"
+                                    >
+                                        country
+                                    </p>
+                                </div>
+                            {/if}
+                            {#if item.isRace}
+                                <div
+                                    class="text-center p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30"
+                                >
+                                    <Trophy size="24" class="mx-auto mb-2 text-amber-500" />
+                                    <p class="text-lg font-semibold">Race</p>
+                                    <p
+                                        class="text-xs text-muted-foreground uppercase tracking-wide"
+                                    >
+                                        {item.category === 'cycling'
+                                            ? 'Cycling'
+                                            : item.category === 'running'
+                                              ? 'Running'
+                                              : 'Event'}
+                                    </p>
+                                </div>
+                            {/if}
+                        </div>
+
+                        <!-- Tags inline -->
+                        {#if item.tags.length > 0}
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                {#each item.tags as tag}
+                                    <span
+                                        class="px-3 py-1 bg-secondary text-secondary-foreground rounded-full text-sm"
+                                    >
+                                        {tag}
+                                    </span>
+                                {/each}
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+
             <!-- Map -->
             {#if item.filename}
                 <div class="rounded-lg overflow-hidden border shadow-sm mb-6">
@@ -201,158 +286,93 @@
                 </div>
             {/if}
 
-            <!-- Info Grid -->
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Left Column: Stats & Image -->
-                <div class="space-y-6">
-                    <!-- Stats -->
-                    <div class="grid grid-cols-2 gap-4">
-                        {#if item.distance}
-                            <div class="rounded-lg border p-4 bg-card">
-                                <div
-                                    class="flex items-center gap-2 text-sm text-muted-foreground mb-1"
-                                >
-                                    <Route size="16" />
-                                    Distance
-                                </div>
-                                <p class="text-2xl font-bold">{item.distance} km</p>
+            <!-- Additional Info -->
+            {#if item.description || item.raceTips || item.raceResultsUrl || item.raceTrackerUrl || (item.mediaLinks && item.mediaLinks.length > 0)}
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Description Column -->
+                    <div class="space-y-6">
+                        <!-- Description -->
+                        {#if item.description}
+                            <div class="space-y-2">
+                                <h3 class="font-semibold">Description</h3>
+                                <p class="text-muted-foreground whitespace-pre-wrap">
+                                    {item.description}
+                                </p>
                             </div>
                         {/if}
-                        {#if item.elevation}
-                            <div class="rounded-lg border p-4 bg-card">
+
+                        <!-- Race Tips -->
+                        {#if item.raceTips}
+                            <div class="space-y-2">
+                                <h3 class="font-semibold flex items-center gap-2">
+                                    <Trophy size="16" class="text-amber-500" />
+                                    Race Tips
+                                </h3>
                                 <div
-                                    class="flex items-center gap-2 text-sm text-muted-foreground mb-1"
+                                    class="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900"
                                 >
-                                    <Mountain size="16" />
-                                    Elevation
+                                    <p class="text-sm whitespace-pre-wrap">{item.raceTips}</p>
                                 </div>
-                                <p class="text-2xl font-bold">{item.elevation} m</p>
                             </div>
                         {/if}
-                        {#if item.country}
-                            <div class="rounded-lg border p-4 bg-card">
-                                <div
-                                    class="flex items-center gap-2 text-sm text-muted-foreground mb-1"
-                                >
-                                    <MapPin size="16" />
-                                    Country
+
+                        <!-- Race Links -->
+                        {#if item.raceResultsUrl || item.raceTrackerUrl}
+                            <div class="space-y-2">
+                                <h3 class="font-semibold">Race Links</h3>
+                                <div class="flex flex-col gap-2">
+                                    {#if item.raceResultsUrl}
+                                        <a
+                                            href={item.raceResultsUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
+                                        >
+                                            <Medal size="16" class="text-amber-500" />
+                                            <span>View Results</span>
+                                        </a>
+                                    {/if}
+                                    {#if item.raceTrackerUrl}
+                                        <a
+                                            href={item.raceTrackerUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
+                                        >
+                                            <Radio size="16" class="text-green-500" />
+                                            <span>Live Tracker</span>
+                                        </a>
+                                    {/if}
                                 </div>
-                                <p class="text-lg font-semibold">{item.country}</p>
+                            </div>
+                        {/if}
+
+                        <!-- Media Links -->
+                        {#if item.mediaLinks && item.mediaLinks.length > 0}
+                            <div class="space-y-2">
+                                <h3 class="font-semibold">Stories & Movies</h3>
+                                <div class="flex flex-col gap-2">
+                                    {#each item.mediaLinks as link}
+                                        <a
+                                            href={link.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
+                                        >
+                                            {#if link.type === 'story'}
+                                                <BookOpen size="16" class="text-blue-500" />
+                                            {:else}
+                                                <Film size="16" class="text-purple-500" />
+                                            {/if}
+                                            <span class="truncate">{link.title || link.url}</span>
+                                        </a>
+                                    {/each}
+                                </div>
                             </div>
                         {/if}
                     </div>
-
-                    <!-- Image -->
-                    {#if item.image}
-                        <div class="rounded-lg overflow-hidden border">
-                            <img
-                                src="/api/gpx/images/{item.image}"
-                                alt={getDisplayName(item)}
-                                class="w-full h-auto"
-                            />
-                        </div>
-                    {/if}
-
-                    <!-- Tags -->
-                    {#if item.tags.length > 0}
-                        <div class="space-y-2">
-                            <h3 class="font-semibold">Tags</h3>
-                            <div class="flex flex-wrap gap-2">
-                                {#each item.tags as tag}
-                                    <span
-                                        class="px-3 py-1 bg-secondary text-secondary-foreground rounded-full text-sm"
-                                    >
-                                        {tag}
-                                    </span>
-                                {/each}
-                            </div>
-                        </div>
-                    {/if}
                 </div>
-
-                <!-- Right Column: Description, Links -->
-                <div class="space-y-6">
-                    <!-- Description -->
-                    {#if item.description}
-                        <div class="space-y-2">
-                            <h3 class="font-semibold">Description</h3>
-                            <p class="text-muted-foreground whitespace-pre-wrap">
-                                {item.description}
-                            </p>
-                        </div>
-                    {/if}
-
-                    <!-- Race Tips -->
-                    {#if item.raceTips}
-                        <div class="space-y-2">
-                            <h3 class="font-semibold flex items-center gap-2">
-                                <Trophy size="16" class="text-amber-500" />
-                                Race Tips
-                            </h3>
-                            <div
-                                class="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900"
-                            >
-                                <p class="text-sm whitespace-pre-wrap">{item.raceTips}</p>
-                            </div>
-                        </div>
-                    {/if}
-
-                    <!-- Race Links -->
-                    {#if item.raceResultsUrl || item.raceTrackerUrl}
-                        <div class="space-y-2">
-                            <h3 class="font-semibold">Race Links</h3>
-                            <div class="flex flex-col gap-2">
-                                {#if item.raceResultsUrl}
-                                    <a
-                                        href={item.raceResultsUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
-                                    >
-                                        <Medal size="16" class="text-amber-500" />
-                                        <span>View Results</span>
-                                    </a>
-                                {/if}
-                                {#if item.raceTrackerUrl}
-                                    <a
-                                        href={item.raceTrackerUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
-                                    >
-                                        <Radio size="16" class="text-green-500" />
-                                        <span>Live Tracker</span>
-                                    </a>
-                                {/if}
-                            </div>
-                        </div>
-                    {/if}
-
-                    <!-- Media Links -->
-                    {#if item.mediaLinks && item.mediaLinks.length > 0}
-                        <div class="space-y-2">
-                            <h3 class="font-semibold">Stories & Movies</h3>
-                            <div class="flex flex-col gap-2">
-                                {#each item.mediaLinks as link}
-                                    <a
-                                        href={link.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
-                                    >
-                                        {#if link.type === 'story'}
-                                            <BookOpen size="16" class="text-blue-500" />
-                                        {:else}
-                                            <Film size="16" class="text-purple-500" />
-                                        {/if}
-                                        <span class="truncate">{link.title || link.url}</span>
-                                    </a>
-                                {/each}
-                            </div>
-                        </div>
-                    {/if}
-                </div>
-            </div>
+            {/if}
         </div>
     {/if}
 </div>
