@@ -81,6 +81,12 @@
     "rideStartDate": "",
     "rideEndDate": "",
     "rideWebpage": "",
-    "rideTips": ""
+    "rideTips": "",
+    "image": "f7c40d13-5648-42b2-a020-eded0151e707-1765720260003.jpg",
+    "isRace": false,
+    "raceStartDate": "",
+    "raceEndDate": "",
+    "raceTips": "",
+    "imageSize": "medium"
   }
 ]

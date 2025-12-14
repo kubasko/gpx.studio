@@ -29,6 +29,8 @@
         raceEndDate?: string;
         raceWebpage?: string;
         raceTips?: string;
+        raceResultsUrl?: string;
+        raceTrackerUrl?: string;
         image?: string;
         imageSize?: 'small' | 'medium' | 'large';
     };
@@ -62,6 +64,8 @@
     let raceEndDate = $state('');
     let raceWebpage = $state('');
     let raceTips = $state('');
+    let raceResultsUrl = $state('');
+    let raceTrackerUrl = $state('');
 
     // Image state
     let image = $state<string | undefined>(undefined);
@@ -84,6 +88,8 @@
             raceEndDate = item.raceEndDate || '';
             raceWebpage = item.raceWebpage || '';
             raceTips = item.raceTips || '';
+            raceResultsUrl = item.raceResultsUrl || '';
+            raceTrackerUrl = item.raceTrackerUrl || '';
             image = item.image;
             imageSize = item.imageSize || 'medium';
             imageError = '';
@@ -114,6 +120,8 @@
                 raceEndDate,
                 raceWebpage,
                 raceTips,
+                raceResultsUrl,
+                raceTrackerUrl,
                 imageSize,
             };
 
@@ -405,6 +413,26 @@
                                 type="url"
                                 bind:value={raceWebpage}
                                 placeholder="https://..."
+                            />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="raceResultsUrl">Results Link</Label>
+                            <Input
+                                id="raceResultsUrl"
+                                type="url"
+                                bind:value={raceResultsUrl}
+                                placeholder="https://results..."
+                            />
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="raceTrackerUrl">Tracker Link</Label>
+                            <Input
+                                id="raceTrackerUrl"
+                                type="url"
+                                bind:value={raceTrackerUrl}
+                                placeholder="https://tracker..."
                             />
                         </div>
 

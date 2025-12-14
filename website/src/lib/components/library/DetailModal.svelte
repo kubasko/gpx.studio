@@ -1,7 +1,17 @@
 <script lang="ts">
     import { Button } from '$lib/components/ui/button';
     import * as Dialog from '$lib/components/ui/dialog';
-    import { ExternalLink, Calendar, MapPin, Trophy, Bike, Footprints, Tag } from '@lucide/svelte';
+    import {
+        ExternalLink,
+        Calendar,
+        MapPin,
+        Trophy,
+        Bike,
+        Footprints,
+        Tag,
+        Medal,
+        Radio,
+    } from '@lucide/svelte';
 
     type LibraryItem = {
         id: string;
@@ -22,6 +32,8 @@
         raceEndDate?: string;
         raceWebpage?: string;
         raceTips?: string;
+        raceResultsUrl?: string;
+        raceTrackerUrl?: string;
         image?: string;
     };
 
@@ -127,7 +139,37 @@
                         rel="noopener noreferrer"
                         class="text-primary hover:underline text-sm"
                     >
-                        {item.raceWebpage}
+                        Race Website
+                    </a>
+                </div>
+            {/if}
+
+            <!-- Results link -->
+            {#if item.raceResultsUrl}
+                <div class="flex items-center gap-2">
+                    <Medal size="16" class="text-amber-500" />
+                    <a
+                        href={item.raceResultsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-primary hover:underline text-sm"
+                    >
+                        Race Results
+                    </a>
+                </div>
+            {/if}
+
+            <!-- Tracker link -->
+            {#if item.raceTrackerUrl}
+                <div class="flex items-center gap-2">
+                    <Radio size="16" class="text-green-500" />
+                    <a
+                        href={item.raceTrackerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-primary hover:underline text-sm"
+                    >
+                        Live Tracker
                     </a>
                 </div>
             {/if}

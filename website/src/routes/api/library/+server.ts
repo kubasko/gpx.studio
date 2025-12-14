@@ -30,6 +30,8 @@ export type LibraryItem = {
     raceEndDate?: string;
     raceWebpage?: string;
     raceTips?: string;
+    raceResultsUrl?: string;
+    raceTrackerUrl?: string;
     // Image filename (stored in /static/gpx/images/)
     image?: string;
     // Image display size on cards
@@ -130,6 +132,8 @@ export async function PUT({ request }) {
         raceEndDate,
         raceWebpage,
         raceTips,
+        raceResultsUrl,
+        raceTrackerUrl,
         imageSize,
     } = await request.json();
 
@@ -167,6 +171,30 @@ export async function PUT({ request }) {
         }
     }
     if (raceTips !== undefined) db[index].raceTips = raceTips;
+    if (raceResultsUrl !== undefined) {
+        if (raceResultsUrl && raceResultsUrl.trim()) {
+            try {
+                new URL(raceResultsUrl);
+                db[index].raceResultsUrl = raceResultsUrl;
+            } catch {
+                db[index].raceResultsUrl = undefined;
+            }
+        } else {
+            db[index].raceResultsUrl = undefined;
+        }
+    }
+    if (raceTrackerUrl !== undefined) {
+        if (raceTrackerUrl && raceTrackerUrl.trim()) {
+            try {
+                new URL(raceTrackerUrl);
+                db[index].raceTrackerUrl = raceTrackerUrl;
+            } catch {
+                db[index].raceTrackerUrl = undefined;
+            }
+        } else {
+            db[index].raceTrackerUrl = undefined;
+        }
+    }
     if (imageSize !== undefined) db[index].imageSize = imageSize;
 
     await writeDb(db);

@@ -23,6 +23,8 @@
         Copy,
         Eye,
         Share2,
+        Medal,
+        Radio,
     } from '@lucide/svelte';
     import { getAuthHeaders, hasWriteAccess } from '$lib/auth';
     import * as Dialog from '$lib/components/ui/dialog';
@@ -47,6 +49,8 @@
         raceEndDate?: string;
         raceWebpage?: string;
         raceTips?: string;
+        raceResultsUrl?: string;
+        raceTrackerUrl?: string;
         image?: string;
         imageSize?: 'small' | 'medium' | 'large';
     };
@@ -376,6 +380,30 @@
                                                     title="Visit race webpage"
                                                 >
                                                     <ExternalLink size="12" />
+                                                </Button>
+                                            {/if}
+                                            {#if item.raceResultsUrl}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    class="h-6 w-6"
+                                                    href={item.raceResultsUrl}
+                                                    target="_blank"
+                                                    title="Race Results"
+                                                >
+                                                    <Medal size="12" class="text-amber-500" />
+                                                </Button>
+                                            {/if}
+                                            {#if item.raceTrackerUrl}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    class="h-6 w-6"
+                                                    href={item.raceTrackerUrl}
+                                                    target="_blank"
+                                                    title="Live Tracker"
+                                                >
+                                                    <Radio size="12" class="text-green-500" />
                                                 </Button>
                                             {/if}
                                             {#if canWrite}
