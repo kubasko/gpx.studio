@@ -8,6 +8,13 @@ import { building, dev } from '$app/environment';
 const LIBRARY_DIR = dev ? 'static/gpx' : 'build/client/gpx';
 const DB_FILE = path.join(LIBRARY_DIR, 'library.json');
 
+export type MediaLink = {
+    id: string;
+    type: 'story' | 'movie';
+    url: string;
+    title?: string;
+};
+
 export type LibraryItem = {
     id: string;
     name: string;
@@ -36,6 +43,8 @@ export type LibraryItem = {
     image?: string;
     // Image display size on cards
     imageSize?: 'small' | 'medium' | 'large';
+    // Media links (stories, movies)
+    mediaLinks?: MediaLink[];
 };
 
 // Ensure directory exists
@@ -135,6 +144,7 @@ export async function PUT({ request }) {
         raceResultsUrl,
         raceTrackerUrl,
         imageSize,
+        mediaLinks,
     } = await request.json();
 
     if (!id) {
@@ -196,6 +206,7 @@ export async function PUT({ request }) {
         }
     }
     if (imageSize !== undefined) db[index].imageSize = imageSize;
+    if (mediaLinks !== undefined) db[index].mediaLinks = mediaLinks;
 
     await writeDb(db);
 

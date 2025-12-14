@@ -7,8 +7,27 @@
     import { Switch } from '$lib/components/ui/switch';
     import * as Dialog from '$lib/components/ui/dialog';
     import { i18n } from '$lib/i18n.svelte';
-    import { Loader2, Download, Bike, Footprints, Upload, Trash2, ImageIcon } from '@lucide/svelte';
+    import {
+        Loader2,
+        Download,
+        Bike,
+        Footprints,
+        Upload,
+        Trash2,
+        ImageIcon,
+        Plus,
+        Film,
+        BookOpen,
+        X,
+    } from '@lucide/svelte';
     import { getAuthHeaders } from '$lib/auth';
+
+    type MediaLink = {
+        id: string;
+        type: 'story' | 'movie';
+        url: string;
+        title?: string;
+    };
 
     type LibraryItem = {
         id: string;
@@ -33,6 +52,7 @@
         raceTrackerUrl?: string;
         image?: string;
         imageSize?: 'small' | 'medium' | 'large';
+        mediaLinks?: MediaLink[];
     };
 
     let {
@@ -73,6 +93,9 @@
     let imageUploading = $state(false);
     let imageError = $state('');
 
+    // Media links state
+    let mediaLinks = $state<MediaLink[]>([]);
+
     $effect(() => {
         if (open && item) {
             tags = item.tags.join(', ');
@@ -92,6 +115,7 @@
             raceTrackerUrl = item.raceTrackerUrl || '';
             image = item.image;
             imageSize = item.imageSize || 'medium';
+            mediaLinks = item.mediaLinks ? [...item.mediaLinks] : [];
             imageError = '';
         }
     });
@@ -123,6 +147,7 @@
                 raceResultsUrl,
                 raceTrackerUrl,
                 imageSize,
+                mediaLinks,
             };
 
             const res = await fetch('/api/library', {
@@ -212,6 +237,29 @@
         } finally {
             imageUploading = false;
         }
+    }
+
+    // Media link helpers
+    function addMediaLink(type: 'story' | 'movie') {
+        mediaLinks = [
+            ...mediaLinks,
+            {
+                id: crypto.randomUUID(),
+                type,
+                url: '',
+                title: '',
+            },
+        ];
+    }
+
+    function removeMediaLink(id: string) {
+        mediaLinks = mediaLinks.filter((link) => link.id !== id);
+    }
+
+    function updateMediaLink(id: string, field: 'url' | 'title', value: string) {
+        mediaLinks = mediaLinks.map((link) =>
+            link.id === id ? { ...link, [field]: value } : link
+        );
     }
 </script>
 
@@ -445,6 +493,81 @@
                                 class="h-24"
                             />
                         </div>
+                    </div>
+                {/if}
+            </div>
+
+            <!-- Media Links Section -->
+            <div class="border-t pt-4">
+                <div class="flex items-center justify-between mb-3">
+                    <Label class="text-base font-semibold">Stories & Movies</Label>
+                    <div class="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onclick={() => addMediaLink('story')}
+                            class="h-7 text-xs"
+                        >
+                            <BookOpen size="14" class="mr-1" />
+                            Add Story
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onclick={() => addMediaLink('movie')}
+                            class="h-7 text-xs"
+                        >
+                            <Film size="14" class="mr-1" />
+                            Add Movie
+                        </Button>
+                    </div>
+                </div>
+
+                {#if mediaLinks.length === 0}
+                    <p class="text-sm text-muted-foreground text-center py-4">
+                        No stories or movies added yet
+                    </p>
+                {:else}
+                    <div class="space-y-3">
+                        {#each mediaLinks as link (link.id)}
+                            <div class="flex items-start gap-2 p-3 rounded-lg border bg-muted/30">
+                                <div class="shrink-0 mt-1">
+                                    {#if link.type === 'story'}
+                                        <BookOpen size="16" class="text-blue-500" />
+                                    {:else}
+                                        <Film size="16" class="text-purple-500" />
+                                    {/if}
+                                </div>
+                                <div class="flex-1 space-y-2">
+                                    <Input
+                                        placeholder="Title (optional)"
+                                        value={link.title || ''}
+                                        oninput={(e) =>
+                                            updateMediaLink(
+                                                link.id,
+                                                'title',
+                                                e.currentTarget.value
+                                            )}
+                                        class="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder="URL (e.g. YouTube, Strava, blog)"
+                                        value={link.url}
+                                        oninput={(e) =>
+                                            updateMediaLink(link.id, 'url', e.currentTarget.value)}
+                                        class="h-8 text-sm"
+                                    />
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="h-8 w-8 text-destructive hover:text-destructive shrink-0"
+                                    onclick={() => removeMediaLink(link.id)}
+                                >
+                                    <X size="16" />
+                                </Button>
+                            </div>
+                        {/each}
                     </div>
                 {/if}
             </div>

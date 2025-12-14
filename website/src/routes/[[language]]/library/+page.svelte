@@ -25,6 +25,8 @@
         Share2,
         Medal,
         Radio,
+        Film,
+        BookOpen,
     } from '@lucide/svelte';
     import { getAuthHeaders, hasWriteAccess } from '$lib/auth';
     import * as Dialog from '$lib/components/ui/dialog';
@@ -53,6 +55,12 @@
         raceTrackerUrl?: string;
         image?: string;
         imageSize?: 'small' | 'medium' | 'large';
+        mediaLinks?: {
+            id: string;
+            type: 'story' | 'movie';
+            url: string;
+            title?: string;
+        }[];
     };
 
     // Get display name - prefer customName if set, otherwise use filename-based name
@@ -360,6 +368,20 @@
                                                     size="14"
                                                     class="text-amber-500 shrink-0"
                                                     title="Race"
+                                                />
+                                            {/if}
+                                            {#if item.mediaLinks?.some((l) => l.type === 'story')}
+                                                <BookOpen
+                                                    size="14"
+                                                    class="text-blue-500 shrink-0"
+                                                    title="Has Story"
+                                                />
+                                            {/if}
+                                            {#if item.mediaLinks?.some((l) => l.type === 'movie')}
+                                                <Film
+                                                    size="14"
+                                                    class="text-purple-500 shrink-0"
+                                                    title="Has Movie"
                                                 />
                                             {/if}
                                             <h3

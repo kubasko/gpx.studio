@@ -11,6 +11,8 @@
         Tag,
         Medal,
         Radio,
+        BookOpen,
+        Film,
     } from '@lucide/svelte';
 
     type LibraryItem = {
@@ -35,6 +37,12 @@
         raceResultsUrl?: string;
         raceTrackerUrl?: string;
         image?: string;
+        mediaLinks?: {
+            id: string;
+            type: 'story' | 'movie';
+            url: string;
+            title?: string;
+        }[];
     };
 
     let {
@@ -210,6 +218,32 @@
                     >
                         {item.raceTips}
                     </p>
+                </div>
+            {/if}
+
+            <!-- Media Links -->
+            {#if item.mediaLinks && item.mediaLinks.length > 0}
+                <div class="border-t pt-4">
+                    <h3 class="font-semibold mb-3">Stories & Movies</h3>
+                    <div class="space-y-2">
+                        {#each item.mediaLinks as link}
+                            <a
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors"
+                            >
+                                {#if link.type === 'story'}
+                                    <BookOpen size="16" class="text-blue-500 shrink-0" />
+                                {:else}
+                                    <Film size="16" class="text-purple-500 shrink-0" />
+                                {/if}
+                                <span class="text-sm text-primary hover:underline truncate">
+                                    {link.title || link.url}
+                                </span>
+                            </a>
+                        {/each}
+                    </div>
                 </div>
             {/if}
         </div>
