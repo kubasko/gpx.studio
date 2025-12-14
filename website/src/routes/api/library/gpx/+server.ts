@@ -76,6 +76,14 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c;
 }
 
+interface Point {
+    lat: number;
+    lon: number;
+    ele: number | null;
+    dist: number; // accumulated distance in km
+    index: number;
+}
+
 function parseGpxStats(gpxContent: string) {
     let totalDistance = 0;
     let totalElevation = 0;
@@ -83,7 +91,7 @@ function parseGpxStats(gpxContent: string) {
     const trkptRegex = /<trkpt[^>]*lat="([^"]+)"[^>]*lon="([^"]+)"[^>]*>[\s\S]*?<\/trkpt>/g;
     const eleRegex = /<ele>([^<]+)<\/ele>/;
 
-    const points: { lat: number; lon: number; ele: number | null }[] = [];
+    const rawPoints: { lat: number; lon: number; ele: number | null }[] = [];
     let match;
 
     while ((match = trkptRegex.exec(gpxContent)) !== null) {
@@ -91,79 +99,209 @@ function parseGpxStats(gpxContent: string) {
         const lon = parseFloat(match[2]);
         const eleMatch = match[0].match(eleRegex);
         const ele = eleMatch ? parseFloat(eleMatch[1]) : null;
-        points.push({ lat, lon, ele });
+        rawPoints.push({ lat, lon, ele });
     }
 
-    if (points.length === 0) {
+    if (rawPoints.length === 0) {
         const trkptRegex2 = /<trkpt[^>]*lon="([^"]+)"[^>]*lat="([^"]+)"[^>]*>[\s\S]*?<\/trkpt>/g;
         while ((match = trkptRegex2.exec(gpxContent)) !== null) {
             const lon = parseFloat(match[1]);
             const lat = parseFloat(match[2]);
             const eleMatch = match[0].match(eleRegex);
             const ele = eleMatch ? parseFloat(eleMatch[1]) : null;
-            points.push({ lat, lon, ele });
+            rawPoints.push({ lat, lon, ele });
         }
     }
 
-    // Calculate accumulated distances for smoothing
-    const distances: number[] = [0];
-    let totalDist = 0;
+    if (rawPoints.length === 0) {
+        return { distance: 0, elevation: 0, firstPoint: null };
+    }
 
-    for (let i = 1; i < points.length; i++) {
+    // 1. Prepare points with accumulated distance
+    const points: Point[] = [];
+    let currentDist = 0;
+    points.push({ ...rawPoints[0], dist: 0, index: 0 });
+
+    for (let i = 1; i < rawPoints.length; i++) {
         const d = haversineDistance(
-            points[i - 1].lat,
-            points[i - 1].lon,
-            points[i].lat,
-            points[i].lon
+            rawPoints[i - 1].lat,
+            rawPoints[i - 1].lon,
+            rawPoints[i].lat,
+            rawPoints[i].lon
         );
-        totalDist += d;
-        distances.push(totalDist);
+        currentDist += d;
+        points.push({ ...rawPoints[i], dist: currentDist, index: i });
     }
-    totalDistance = totalDist;
+    totalDistance = currentDist;
 
-    // Apply Rolling Average Smoothing
-    // Logic adapted from gpx.studio core: averages elevation over a distance window
-    const SMOOTHING_WINDOW = 0.1; // 100 meters (0.1km in our units)
+    // 2. Simplification using Ramer-Douglas-Peucker on Elevation Profile
+    // Epsilon = 20m (matches gpx.studio default)
+    // Distance metric = perpendicular distance in (dist, ele) plane
 
-    const smoothedElevations: number[] = [];
+    function getPerpendicularDist(p: Point, p1: Point, p2: Point) {
+        if (p.ele === null || p1.ele === null || p2.ele === null) return 0;
 
-    for (let i = 0; i < points.length; i++) {
-        // Find start of window
-        let start = i;
-        while (start > 0 && distances[i] - distances[start - 1] <= SMOOTHING_WINDOW) {
-            start--;
+        let x = p.dist * 1000;
+        let y = p.ele;
+        let x1 = p1.dist * 1000;
+        let y1 = p1.ele;
+        let x2 = p2.dist * 1000;
+        let y2 = p2.ele;
+
+        let A = x - x1;
+        let B = y - y1;
+        let C = x2 - x1;
+        let D = y2 - y1;
+
+        let dot = A * C + B * D;
+        let len_sq = C * C + D * D;
+        let param = -1;
+        if (len_sq != 0) param = dot / len_sq;
+
+        let xx, yy;
+
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        } else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        } else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
         }
 
-        // Find end of window
-        let end = i;
-        while (end < points.length - 1 && distances[end + 1] - distances[i] <= SMOOTHING_WINDOW) {
-            end++;
-        }
+        let dx = x - xx;
+        let dy = y - yy;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 
-        // Calculate average elevation in window
-        let sumEle = 0;
-        let count = 0;
+    function rdp(pts: Point[], epsilon: number): Point[] {
+        if (pts.length < 3) return pts;
 
-        for (let j = start; j <= end; j++) {
-            if (points[j].ele !== null) {
-                sumEle += points[j].ele!;
-                count++;
+        let first = pts[0];
+        let last = pts[pts.length - 1];
+        let index = -1;
+        let dist = 0;
+
+        for (let i = 1; i < pts.length - 1; i++) {
+            let cDist = getPerpendicularDist(pts[i], first, last);
+            if (cDist > dist) {
+                dist = cDist;
+                index = i;
             }
         }
 
-        if (count > 0) {
-            smoothedElevations.push(sumEle / count);
+        if (dist > epsilon) {
+            let l1 = rdp(pts.slice(0, index + 1), epsilon);
+            let l2 = rdp(pts.slice(index), epsilon);
+            return l1.slice(0, l1.length - 1).concat(l2);
         } else {
-            // Fallback for points with no elevation in window (shouldn't happen if data exists)
-            smoothedElevations.push(points[i].ele || 0);
+            return [first, last];
         }
     }
 
-    // Calculate gain/loss from smoothed data
-    for (let i = 1; i < smoothedElevations.length; i++) {
-        const diff = smoothedElevations[i] - smoothedElevations[i - 1];
-        if (diff > 0) {
-            totalElevation += diff;
+    // Only run RDP if we have valid elevation data
+    const hasElevation = points.some((p) => p.ele !== null);
+    let simplified: Point[] = [];
+
+    // We only RDP on segments that actually have elevation
+    // But for simplicity in this script, we'll filter nulls out and assume continuous or just use original logic which handles nulls by returning 0 dist
+    // gpx.studio handles nulls gracefully.
+
+    // Note: Recursive RDP on large arrays can blow stack. Iterative or just less recursion?
+    // Given standard tracks < 20k points, recursion is usually fine.
+    // We'll use the simplified recursive logic but be careful.
+    try {
+        if (hasElevation) {
+            simplified = rdp(points, 20);
+        } else {
+            simplified = [points[0], points[points.length - 1]];
+        }
+    } catch (e) {
+        // Fallback if RDP fails (stack overflow)
+        simplified = [points[0], points[points.length - 1]];
+    }
+
+    // 3. Anchored Smoothing
+    // For each segment between simplified points, we apply window smoothing
+    // BUT we anchor the start and end of the segment to the simplified points (original elevation)
+
+    const smoothedElevations = new Array(points.length).fill(0);
+    // Initialize with original values
+    for (let i = 0; i < points.length; i++) smoothedElevations[i] = points[i].ele || 0;
+
+    const SMOOTHING_WINDOW_KM = 0.1; // 100m
+
+    // This computes average elevation in window [start, end]
+    function computeAverageInWindow(startIdx: number, endIdx: number) {
+        let sum = 0;
+        let count = 0;
+        for (let k = startIdx; k <= endIdx; k++) {
+            if (points[k].ele !== null) {
+                sum += points[k].ele!;
+                count++;
+            }
+        }
+        return count > 0 ? sum / count : 0;
+    }
+
+    for (let i = 0; i < simplified.length - 1; i++) {
+        const startIdx = simplified[i].index;
+        const endIdx = simplified[i + 1].index;
+
+        // Perform smoothing for points between startIdx and endIdx
+        // The window smoothing logic:
+        // For each point j in [startIdx, endIdx], we find a window [wStart, wEnd] such that dist <= SMOOTHING_WINDOW
+        // And we ensure wStart >= startIdx and wEnd <= endIdx ?
+        // Actually gpx.studio doesn't constrain window to the segment, it constrains the *points being updated* to the segment.
+        // It uses the full track for the window data source.
+
+        // However, gpx.studio implementation of distanceWindowSmoothing takes (left, right) limits.
+        // In _elevationComputation: smoothedEle = distanceWindowSmoothing(start, end + 1, ...)
+        // And inside distanceWindowSmoothing, it iterates i from left to right.
+        // And it finds window within left/right bounds?
+        // "let end = Math.min(i + 2, right)" -> Yes, it constrains window to these bounds!
+        // So smoothing does NOT cross the simplification "anchors". This is KEY.
+
+        for (let j = startIdx; j <= endIdx; j++) {
+            // Find window [wStart, wEnd] WITHIN [startIdx, endIdx+1] (exclusive end?)
+            // indices are inclusive for calculation
+
+            // Backward
+            let wStart = j;
+            while (
+                wStart > startIdx &&
+                points[j].dist - points[wStart - 1].dist <= SMOOTHING_WINDOW_KM
+            ) {
+                wStart--;
+            }
+
+            // Forward
+            let wEnd = j;
+            while (wEnd < endIdx && points[wEnd + 1].dist - points[j].dist <= SMOOTHING_WINDOW_KM) {
+                wEnd++;
+            }
+
+            smoothedElevations[j] = computeAverageInWindow(wStart, wEnd);
+        }
+
+        // Anchor the ends exactly to original to prevent drift at key points
+        smoothedElevations[startIdx] = points[startIdx].ele || 0;
+        smoothedElevations[endIdx] = points[endIdx].ele || 0;
+    }
+
+    // 4. Calculate stats from smoothed
+    // Note: gpx.studio sums gains only within the segments
+    for (let i = 0; i < simplified.length - 1; i++) {
+        const startIdx = simplified[i].index;
+        const endIdx = simplified[i + 1].index;
+
+        for (let j = startIdx; j < endIdx; j++) {
+            const diff = smoothedElevations[j + 1] - smoothedElevations[j];
+            if (diff > 0) {
+                totalElevation += diff;
+            }
         }
     }
 
