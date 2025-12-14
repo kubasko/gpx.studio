@@ -28,7 +28,7 @@
     "raceWebpage": "https://pgr.kolo-ultra.pl/",
     "raceTips": "Ride Forest RIde",
     "category": "cycling",
-    "imageSize": "small",
+    "imageSize": "medium",
     "image": "354ff30c-1f21-4f93-9a06-85d83e30f131-1765546925618.png",
     "raceTrackerUrl": "https://www.poltrax.pl/pgr2025",
     "mediaLinks": [
@@ -194,14 +194,28 @@
   {
     "id": "7845ce20-d4bd-49f9-a791-0c7edcc9af82",
     "name": "GLG 2025 KLASYK 12.09.2025.gpx",
-    "filename": "1765739360660_glg_2025_klasyk_12.09.2025.gpx",
+    "filename": "1765741550274_glg_2025_klasyk_12.09.2025.gpx",
     "tags": [
       "GLG",
       "2025"
     ],
     "date": "2025-12-14T19:09:20.689Z",
     "distance": 164.6,
-    "elevation": 1334
+    "elevation": 1334,
+    "country": "Polska",
+    "description": "",
+    "style": {
+      "color": "#ff0000",
+      "opacity": 0.8,
+      "width": 3
+    },
+    "customName": "",
+    "isRace": false,
+    "raceStartDate": "",
+    "raceEndDate": "",
+    "raceTips": "",
+    "imageSize": "medium",
+    "mediaLinks": []
   },
   {
     "id": "0fd4c7a1-353d-47b5-9714-b718335782c0",
@@ -225,6 +239,7 @@
     "mediaLinks": [],
     "distance": 149.5,
     "elevation": 4721,
-    "country": "Polska"
+    "country": "Polska",
+    "image": "0fd4c7a1-353d-47b5-9714-b718335782c0-1765740860147.jpeg"
   }
 ]

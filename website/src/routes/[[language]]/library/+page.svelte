@@ -532,22 +532,34 @@
 
                                     <div class="flex gap-2 mt-auto">
                                         <Button
-                                            onclick={() => {
-                                                viewingItem = item;
-                                                isViewing = true;
-                                            }}
+                                            href={`/library/${item.id}`}
+                                            target="_blank"
                                             class="flex-1"
                                             variant="outline"
                                         >
-                                            Info
+                                            <Eye size="14" class="mr-1" />
+                                            View
                                         </Button>
-                                        <Button
-                                            href={getOpenLink(item)}
-                                            class="flex-1"
-                                            variant="outline"
-                                        >
-                                            Open
-                                        </Button>
+                                        {#if item.filename}
+                                            <Button
+                                                href={getOpenLink(item)}
+                                                class="flex-1"
+                                                variant="default"
+                                            >
+                                                Open
+                                            </Button>
+                                        {:else}
+                                            <Button
+                                                onclick={() => {
+                                                    viewingItem = item;
+                                                    isViewing = true;
+                                                }}
+                                                class="flex-1"
+                                                variant="outline"
+                                            >
+                                                Info
+                                            </Button>
+                                        {/if}
                                         {#if canWrite}
                                             <Button
                                                 onclick={() => handleDelete(item)}
