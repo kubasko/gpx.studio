@@ -156,6 +156,21 @@
                 );
             });
         }
+
+        // Sort: by race start date (newest first), then by name
+        res = res.sort((a, b) => {
+            const dateA = a.raceStartDate || a.date || '';
+            const dateB = b.raceStartDate || b.date || '';
+            // Sort by date descending (newest first)
+            if (dateA !== dateB) {
+                return dateB.localeCompare(dateA);
+            }
+            // Then by name ascending
+            const nameA = (a.customName || a.name).toLowerCase();
+            const nameB = (b.customName || b.name).toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+
         filteredItems = res;
     });
 
