@@ -105,41 +105,66 @@ function parseGpxStats(gpxContent: string) {
         }
     }
 
-    // Calculate distance
+    // Calculate accumulated distances for smoothing
+    const distances: number[] = [0];
+    let totalDist = 0;
+
     for (let i = 1; i < points.length; i++) {
-        totalDistance += haversineDistance(
+        const d = haversineDistance(
             points[i - 1].lat,
             points[i - 1].lon,
             points[i].lat,
             points[i].lon
         );
+        totalDist += d;
+        distances.push(totalDist);
     }
+    totalDistance = totalDist;
 
-    // Calculate elevation with noise filtering
-    // Uses a threshold-based approach to reduce GPS noise
-    const ELEVATION_THRESHOLD = 5; // Only count climbs > 5m to filter noise
-    let accumulatedClimb = 0;
-    let lastSignificantEle: number | null = null;
+    // Apply Rolling Average Smoothing
+    // Logic adapted from gpx.studio core: averages elevation over a distance window
+    const SMOOTHING_WINDOW = 0.1; // 100 meters (0.1km in our units)
+
+    const smoothedElevations: number[] = [];
 
     for (let i = 0; i < points.length; i++) {
-        if (points[i].ele === null) continue;
-
-        if (lastSignificantEle === null) {
-            lastSignificantEle = points[i].ele;
-            continue;
+        // Find start of window
+        let start = i;
+        while (start > 0 && distances[i] - distances[start - 1] <= SMOOTHING_WINDOW) {
+            start--;
         }
 
-        const diff = points[i].ele! - lastSignificantEle;
+        // Find end of window
+        let end = i;
+        while (end < points.length - 1 && distances[end + 1] - distances[i] <= SMOOTHING_WINDOW) {
+            end++;
+        }
 
-        if (diff > ELEVATION_THRESHOLD) {
-            // Significant climb - add to total and reset reference point
+        // Calculate average elevation in window
+        let sumEle = 0;
+        let count = 0;
+
+        for (let j = start; j <= end; j++) {
+            if (points[j].ele !== null) {
+                sumEle += points[j].ele!;
+                count++;
+            }
+        }
+
+        if (count > 0) {
+            smoothedElevations.push(sumEle / count);
+        } else {
+            // Fallback for points with no elevation in window (shouldn't happen if data exists)
+            smoothedElevations.push(points[i].ele || 0);
+        }
+    }
+
+    // Calculate gain/loss from smoothed data
+    for (let i = 1; i < smoothedElevations.length; i++) {
+        const diff = smoothedElevations[i] - smoothedElevations[i - 1];
+        if (diff > 0) {
             totalElevation += diff;
-            lastSignificantEle = points[i].ele;
-        } else if (diff < -ELEVATION_THRESHOLD) {
-            // Significant descent - just reset reference point
-            lastSignificantEle = points[i].ele;
         }
-        // Small changes are ignored (noise filtering)
     }
 
     return {
