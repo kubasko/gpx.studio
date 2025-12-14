@@ -26,6 +26,7 @@
         type: 'story' | 'movie';
         url: string;
         title?: string;
+        publishDate?: string;
     };
 
     type LibraryItem = {
@@ -360,7 +361,11 @@
                             <div class="space-y-2">
                                 <h3 class="font-semibold">Stories & Movies</h3>
                                 <div class="flex flex-col gap-2">
-                                    {#each item.mediaLinks as link}
+                                    {#each item.mediaLinks.slice().sort((a, b) => {
+                                        const dateA = a.publishDate || '';
+                                        const dateB = b.publishDate || '';
+                                        return dateB.localeCompare(dateA);
+                                    }) as link}
                                         <a
                                             href={link.url}
                                             target="_blank"
@@ -368,11 +373,21 @@
                                             class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors"
                                         >
                                             {#if link.type === 'story'}
-                                                <BookOpen size="16" class="text-blue-500" />
+                                                <BookOpen
+                                                    size="16"
+                                                    class="text-blue-500 shrink-0"
+                                                />
                                             {:else}
-                                                <Film size="16" class="text-purple-500" />
+                                                <Film size="16" class="text-purple-500 shrink-0" />
                                             {/if}
-                                            <span class="truncate">{link.title || link.url}</span>
+                                            <span class="truncate flex-1"
+                                                >{link.title || link.url}</span
+                                            >
+                                            {#if link.publishDate}
+                                                <span class="text-xs text-muted-foreground shrink-0"
+                                                    >{link.publishDate}</span
+                                                >
+                                            {/if}
                                         </a>
                                     {/each}
                                 </div>

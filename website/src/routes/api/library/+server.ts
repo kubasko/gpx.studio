@@ -13,6 +13,7 @@ export type MediaLink = {
     type: 'story' | 'movie';
     url: string;
     title?: string;
+    publishDate?: string; // Can be full date (YYYY-MM-DD), year only (YYYY), or left empty for unknown
 };
 
 export type LibraryItem = {

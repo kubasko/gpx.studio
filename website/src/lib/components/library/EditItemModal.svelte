@@ -30,6 +30,7 @@
         type: 'story' | 'movie';
         url: string;
         title?: string;
+        publishDate?: string;
     };
 
     type LibraryItem = {
@@ -258,6 +259,7 @@
                 type,
                 url: '',
                 title: '',
+                publishDate: '',
             },
         ];
     }
@@ -266,7 +268,7 @@
         mediaLinks = mediaLinks.filter((link) => link.id !== id);
     }
 
-    function updateMediaLink(id: string, field: 'url' | 'title', value: string) {
+    function updateMediaLink(id: string, field: 'url' | 'title' | 'publishDate', value: string) {
         mediaLinks = mediaLinks.map((link) =>
             link.id === id ? { ...link, [field]: value } : link
         );
@@ -679,6 +681,17 @@
                                         value={link.url}
                                         oninput={(e) =>
                                             updateMediaLink(link.id, 'url', e.currentTarget.value)}
+                                        class="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder="Publish date (YYYY-MM-DD, YYYY, or leave empty)"
+                                        value={link.publishDate || ''}
+                                        oninput={(e) =>
+                                            updateMediaLink(
+                                                link.id,
+                                                'publishDate',
+                                                e.currentTarget.value
+                                            )}
                                         class="h-8 text-sm"
                                     />
                                 </div>
