@@ -65,6 +65,10 @@
             url: string;
             title?: string;
         }[];
+        organizers?: {
+            name: string;
+            url: string;
+        }[];
         distance?: number;
         elevation?: number;
         country?: string;

@@ -57,6 +57,7 @@
         image?: string;
         imageSize?: 'small' | 'medium' | 'large';
         mediaLinks?: MediaLink[];
+        organizers?: { name: string; url: string }[];
         distance?: number;
         elevation?: number;
     };
@@ -102,6 +103,9 @@
     // Media links state
     let mediaLinks = $state<MediaLink[]>([]);
 
+    // Organizers state
+    let organizers = $state<{ name: string; url: string }[]>([]);
+
     // GPX file state
     let gpxUploading = $state(false);
     let gpxError = $state('');
@@ -126,6 +130,7 @@
             image = item.image;
             imageSize = item.imageSize || 'medium';
             mediaLinks = item.mediaLinks ? [...item.mediaLinks] : [];
+            organizers = item.organizers ? [...item.organizers] : [];
             imageError = '';
             gpxError = '';
         }
@@ -159,6 +164,7 @@
                 raceTrackerUrl,
                 imageSize,
                 mediaLinks,
+                organizers,
             };
 
             const res = await fetch('/api/library', {
@@ -306,6 +312,19 @@
             gpxUploading = false;
             input.value = '';
         }
+    }
+
+    // Organizer helpers
+    function addOrganizer() {
+        organizers = [...organizers, { name: '', url: '' }];
+    }
+
+    function removeOrganizer(index: number) {
+        organizers = organizers.filter((_, i) => i !== index);
+    }
+
+    function updateOrganizer(index: number, field: 'name' | 'url', value: string) {
+        organizers = organizers.map((org, i) => (i === index ? { ...org, [field]: value } : org));
     }
 </script>
 
@@ -700,6 +719,54 @@
                                     size="icon"
                                     class="h-8 w-8 text-destructive hover:text-destructive shrink-0"
                                     onclick={() => removeMediaLink(link.id)}
+                                >
+                                    <X size="16" />
+                                </Button>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+
+            <!-- Organizers Section -->
+            <div class="border-t pt-4">
+                <div class="flex items-center justify-between mb-3">
+                    <Label class="text-base font-semibold">{i18n._('library.organizers')}</Label>
+                    <Button variant="outline" size="sm" onclick={addOrganizer} class="h-7 text-xs">
+                        <Plus size="14" class="mr-1" />
+                        {i18n._('library.add_organizer')}
+                    </Button>
+                </div>
+
+                {#if organizers.length === 0}
+                    <p class="text-sm text-muted-foreground text-center py-4">
+                        No organizers added yet
+                    </p>
+                {:else}
+                    <div class="space-y-3">
+                        {#each organizers as org, i}
+                            <div class="flex items-start gap-2 p-3 rounded-lg border bg-muted/30">
+                                <div class="flex-1 space-y-2">
+                                    <Input
+                                        placeholder={i18n._('library.organizer_name')}
+                                        value={org.name}
+                                        oninput={(e) =>
+                                            updateOrganizer(i, 'name', e.currentTarget.value)}
+                                        class="h-8 text-sm"
+                                    />
+                                    <Input
+                                        placeholder={i18n._('library.organizer_url')}
+                                        value={org.url}
+                                        oninput={(e) =>
+                                            updateOrganizer(i, 'url', e.currentTarget.value)}
+                                        class="h-8 text-sm"
+                                    />
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="h-8 w-8 text-destructive hover:text-destructive shrink-0"
+                                    onclick={() => removeOrganizer(i)}
                                 >
                                     <X size="16" />
                                 </Button>

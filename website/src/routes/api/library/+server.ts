@@ -46,6 +46,11 @@ export type LibraryItem = {
     imageSize?: 'small' | 'medium' | 'large';
     // Media links (stories, movies)
     mediaLinks?: MediaLink[];
+    // Ride organizers
+    organizers?: {
+        name: string;
+        url: string;
+    }[];
     // GPX stats
     distance?: number; // Distance in km
     elevation?: number; // Total elevation gain in m
@@ -94,7 +99,11 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 // Parse GPX content and extract distance and elevation
-function parseGpxStats(gpxContent: string): { distance: number; elevation: number } {
+function parseGpxStats(gpxContent: string): {
+    distance: number;
+    elevation: number;
+    firstPoint: { lat: number; lon: number } | null;
+} {
     let totalDistance = 0;
     let totalElevation = 0;
 
@@ -271,6 +280,7 @@ export async function PUT({ request }) {
         raceTrackerUrl,
         imageSize,
         mediaLinks,
+        organizers,
     } = await request.json();
 
     if (!id) {
@@ -333,6 +343,7 @@ export async function PUT({ request }) {
     }
     if (imageSize !== undefined) db[index].imageSize = imageSize;
     if (mediaLinks !== undefined) db[index].mediaLinks = mediaLinks;
+    if (organizers !== undefined) db[index].organizers = organizers;
 
     await writeDb(db);
 

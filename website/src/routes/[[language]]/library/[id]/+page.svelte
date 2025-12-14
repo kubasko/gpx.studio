@@ -53,6 +53,7 @@
         image?: string;
         imageSize?: 'small' | 'medium' | 'large';
         mediaLinks?: MediaLink[];
+        organizers?: { name: string; url: string }[];
         distance?: number;
         elevation?: number;
         country?: string;
@@ -300,7 +301,7 @@
             {/if}
 
             <!-- Additional Info -->
-            {#if item.description || item.raceTips || (item.mediaLinks && item.mediaLinks.length > 0)}
+            {#if item.description || item.raceTips || (item.mediaLinks && item.mediaLinks.length > 0) || (item.organizers && item.organizers.length > 0)}
                 <div class="grid md:grid-cols-2 gap-6">
                     <!-- Left Column: Description and Race Tips -->
                     <div class="space-y-6">
@@ -330,8 +331,33 @@
                         {/if}
                     </div>
 
-                    <!-- Right Column: Stories & Movies -->
+                    <!-- Right Column: Stories & Movies & Organizers -->
                     <div class="space-y-6">
+                        {#if item.organizers && item.organizers.length > 0}
+                            <div class="space-y-2">
+                                <h3 class="font-semibold">Organizers</h3>
+                                <div class="flex flex-col gap-2">
+                                    {#each item.organizers as org}
+                                        <a
+                                            href={org.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors bg-card"
+                                        >
+                                            <ExternalLink
+                                                size="16"
+                                                class="text-muted-foreground shrink-0"
+                                            />
+                                            <span
+                                                class="font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                                                >{org.name}</span
+                                            >
+                                        </a>
+                                    {/each}
+                                </div>
+                            </div>
+                        {/if}
+
                         {#if item.mediaLinks && item.mediaLinks.length > 0}
                             <div class="space-y-2">
                                 <h3 class="font-semibold">Stories & Movies</h3>

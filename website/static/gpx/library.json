@@ -2,7 +2,7 @@
   {
     "id": "354ff30c-1f21-4f93-9a06-85d83e30f131",
     "name": "PGR2026_2025.10.29.gpx",
-    "filename": "1765746775446_1765488017065_pgr2026_2025.10.29.gpx",
+    "filename": "1765747064006_1765488017065_pgr2026_2025.10.29.gpx",
     "tags": [
       "PGR",
       "2026"
@@ -69,13 +69,13 @@
       }
     ],
     "distance": 566,
-    "elevation": 11824,
+    "elevation": 11822,
     "country": "Polska"
   },
   {
     "id": "f2d3e3c4-6096-4ca1-b7f0-e6f91b8c8fdc",
     "name": "PROZIAK300_2025_-_FINAL.gpx",
-    "filename": "1765746967159_proziak300_2025___final.gpx",
+    "filename": "1765747145603_proziak300_2025___final.gpx",
     "tags": [
       "Proziak",
       "2025"
@@ -153,7 +153,7 @@
   {
     "id": "9b274f2b-f902-442c-9ad7-1377b5d6aeb2",
     "name": "gravon_short_2025_final.gpx",
-    "filename": "1765738669167_gravon_short_2025_final.gpx",
+    "filename": "1765747187239_gravon_short_2025_final.gpx",
     "tags": [
       "GravOn",
       "2025"
@@ -172,22 +172,44 @@
     "raceEndDate": "",
     "raceTips": "",
     "imageSize": "medium",
-    "mediaLinks": []
+    "mediaLinks": [],
+    "distance": 190.2,
+    "elevation": 4563,
+    "country": "Polska"
   },
   {
     "id": "632215ff-cfa6-4cdf-a105-3737aeeb4cb4",
     "name": "Sudovia GRVL 2025 ultra 9-5.gpx",
-    "filename": "1765738812951_sudovia_grvl_2025_ultra_9_5.gpx",
+    "filename": "1765749543500_sudovia_grvl_2025_ultra_9_5.gpx",
     "tags": [
       "Sudovia",
       "2025"
     ],
-    "date": "2025-12-14T19:00:12.952Z"
+    "date": "2025-12-14T19:00:12.952Z",
+    "distance": 432.2,
+    "elevation": 4284,
+    "country": "Polska",
+    "image": "632215ff-cfa6-4cdf-a105-3737aeeb4cb4-1765749673092.png",
+    "description": "",
+    "style": {
+      "color": "#ff0000",
+      "opacity": 0.8,
+      "width": 3
+    },
+    "customName": "Sudovia Gravel Ultra",
+    "isRace": true,
+    "raceStartDate": "2025-05-16",
+    "raceEndDate": "2025-05-18",
+    "raceWebpage": "https://sudovia.gravel.love/",
+    "raceTips": "Ride Forest RIde",
+    "raceResultsUrl": "https://sudovia.gravel.love/2025/05/16/wyniki-2025/",
+    "imageSize": "medium",
+    "mediaLinks": []
   },
   {
     "id": "9e6545ac-41e2-48eb-a8c7-7311167c3b2f",
     "name": "GLG 2025 ULTRA 12.09.2025.gpx",
-    "filename": "1765738908230_glg_2025_ultra_12.09.2025.gpx",
+    "filename": "1765750024912_glg_2025_ultra_12.09.2025.gpx",
     "tags": [
       "GLG",
       "2025"
@@ -206,19 +228,23 @@
     "raceEndDate": "",
     "raceTips": "",
     "imageSize": "medium",
-    "mediaLinks": []
+    "mediaLinks": [],
+    "distance": 478.6,
+    "elevation": 3748,
+    "country": "Polska",
+    "organizers": []
   },
   {
     "id": "7845ce20-d4bd-49f9-a791-0c7edcc9af82",
     "name": "GLG 2025 KLASYK 12.09.2025.gpx",
-    "filename": "1765741550274_glg_2025_klasyk_12.09.2025.gpx",
+    "filename": "1765747235476_glg_2025_klasyk_12.09.2025.gpx",
     "tags": [
       "GLG",
       "2025"
     ],
     "date": "2025-12-14T19:09:20.689Z",
     "distance": 164.6,
-    "elevation": 1334,
+    "elevation": 1030,
     "country": "Polska",
     "description": "",
     "style": {
@@ -226,18 +252,19 @@
       "opacity": 0.8,
       "width": 3
     },
-    "customName": "",
+    "customName": "Great Lakes Gravel Klasyk",
     "isRace": false,
     "raceStartDate": "",
     "raceEndDate": "",
     "raceTips": "",
     "imageSize": "medium",
-    "mediaLinks": []
+    "mediaLinks": [],
+    "category": "cycling"
   },
   {
     "id": "0fd4c7a1-353d-47b5-9714-b718335782c0",
     "name": "Testowy bez gpx",
-    "filename": "1765746808508_2025_10_11_1863241100_lemkowyna_trail_150_2025.gpx",
+    "filename": "1765747112328_2025_10_11_1863241100_lemkowyna_trail_150_2025.gpx",
     "tags": [
       "Łemkowyna",
       "2025"
