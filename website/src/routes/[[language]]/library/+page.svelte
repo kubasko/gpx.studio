@@ -169,13 +169,29 @@
         const params = new URLSearchParams();
         params.set('files', JSON.stringify([fileUrl]));
 
-        // Include style metadata if set
+        // Include metadata (custom name, style, description)
+        const displayName = getDisplayName(item);
+        const metadata: Record<string, any> = {
+            [item.filename]: {},
+        };
+
+        // Add custom name if different from original
+        if (item.customName?.trim()) {
+            metadata[item.filename].name = item.customName.trim();
+        }
+
+        // Add style if set
         if (item.style) {
-            const metadata = {
-                [item.filename]: {
-                    style: item.style,
-                },
-            };
+            metadata[item.filename].style = item.style;
+        }
+
+        // Add description if set
+        if (item.description?.trim()) {
+            metadata[item.filename].description = item.description.trim();
+        }
+
+        // Only include metadata if there's something to add
+        if (Object.keys(metadata[item.filename]).length > 0) {
             params.set('metadata', JSON.stringify(metadata));
         }
 
@@ -296,11 +312,18 @@
                                         // Serialize metadata for ALL files
                                         const metadata: Record<string, any> = {};
                                         filteredItems.forEach((item) => {
-                                            if (item.description || item.style) {
-                                                metadata[item.filename] = {
-                                                    description: item.description,
-                                                    style: item.style,
-                                                };
+                                            const fileMeta: Record<string, any> = {};
+                                            if (item.customName?.trim()) {
+                                                fileMeta.name = item.customName.trim();
+                                            }
+                                            if (item.description?.trim()) {
+                                                fileMeta.description = item.description.trim();
+                                            }
+                                            if (item.style) {
+                                                fileMeta.style = item.style;
+                                            }
+                                            if (Object.keys(fileMeta).length > 0) {
+                                                metadata[item.filename] = fileMeta;
                                             }
                                         });
 

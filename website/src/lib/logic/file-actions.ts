@@ -96,6 +96,13 @@ export async function loadFiles(list: FileList | File[], metadata?: Record<strin
             // Apply metadata if present
             if (metadata && metadata[list[i].name]) {
                 const meta = metadata[list[i].name];
+                // Apply custom name if set
+                if (meta.name) {
+                    file.metadata.name = meta.name;
+                    if (file.trk.length === 1) {
+                        file.trk[0].name = meta.name;
+                    }
+                }
                 if (meta.description) {
                     file.metadata.desc = meta.description;
                     if (file.trk.length === 1) {
