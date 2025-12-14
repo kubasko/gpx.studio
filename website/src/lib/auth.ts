@@ -6,20 +6,20 @@ const ACCESS_LEVEL_KEY = 'gpx_studio_access_level';
 export type AccessLevel = 'none' | 'read' | 'write';
 
 /**
- * Get the stored access level from sessionStorage
+ * Get the stored access level from localStorage
  */
 export function getAccessLevel(): AccessLevel {
     if (typeof window === 'undefined') return 'none';
-    return (sessionStorage.getItem(ACCESS_LEVEL_KEY) as AccessLevel) || 'none';
+    return (localStorage.getItem(ACCESS_LEVEL_KEY) as AccessLevel) || 'none';
 }
 
 /**
- * Store the access level in sessionStorage
+ * Store the access level in localStorage
  */
 export function setAccessLevel(level: AccessLevel): void {
     if (typeof window === 'undefined') return;
-    sessionStorage.setItem(ACCESS_LEVEL_KEY, level);
-    sessionStorage.setItem(AUTH_KEY, level !== 'none' ? 'true' : 'false');
+    localStorage.setItem(ACCESS_LEVEL_KEY, level);
+    localStorage.setItem(AUTH_KEY, level !== 'none' ? 'true' : 'false');
 }
 
 /**
@@ -82,9 +82,9 @@ export function getAuthHeaders(): HeadersInit {
 }
 
 /**
- * Check if user is authenticated in sessionStorage (legacy support)
+ * Check if user is authenticated in localStorage (legacy support)
  */
 export function isAuthenticated(): boolean {
     if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem(AUTH_KEY) === 'true';
+    return localStorage.getItem(AUTH_KEY) === 'true';
 }

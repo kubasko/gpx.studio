@@ -537,16 +537,16 @@
                                             class="flex-1"
                                             variant="outline"
                                         >
-                                            <Eye size="14" class="mr-1" />
-                                            View
+                                            Open
                                         </Button>
                                         {#if item.filename}
                                             <Button
                                                 href={getOpenLink(item)}
                                                 class="flex-1"
-                                                variant="default"
+                                                variant="outline"
                                             >
-                                                Open
+                                                <Eye size="14" class="mr-1" />
+                                                View GPX
                                             </Button>
                                         {:else}
                                             <Button
