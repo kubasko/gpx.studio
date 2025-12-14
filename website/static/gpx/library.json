@@ -163,5 +163,53 @@
       "2025"
     ],
     "date": "2025-12-14T19:00:12.952Z"
+  },
+  {
+    "id": "9e6545ac-41e2-48eb-a8c7-7311167c3b2f",
+    "name": "GLG 2025 ULTRA 12.09.2025.gpx",
+    "filename": "1765738908230_glg_2025_ultra_12.09.2025.gpx",
+    "tags": [
+      "GLG",
+      "2025"
+    ],
+    "date": "2025-12-14T19:01:48.232Z",
+    "description": "",
+    "style": {
+      "color": "#ff0000",
+      "opacity": 0.8,
+      "width": 3
+    },
+    "customName": "Great Lakes Gravel Ultra",
+    "category": "cycling",
+    "isRace": false,
+    "raceStartDate": "",
+    "raceEndDate": "",
+    "raceTips": "",
+    "imageSize": "medium",
+    "mediaLinks": []
+  },
+  {
+    "id": "0062e534-a3b7-4fb1-a450-d395f2f47403",
+    "name": "GLG 2025 SPRINT 12.09.2025.gpx",
+    "filename": "1765738937076_glg_2025_sprint_12.09.2025.gpx",
+    "tags": [
+      "GLG",
+      "2025"
+    ],
+    "date": "2025-12-14T19:02:17.077Z",
+    "description": "",
+    "style": {
+      "color": "#ff0000",
+      "opacity": 0.8,
+      "width": 3
+    },
+    "customName": "Great Lakes Gravel Sprint",
+    "category": "cycling",
+    "isRace": false,
+    "raceStartDate": "",
+    "raceEndDate": "",
+    "raceTips": "",
+    "imageSize": "medium",
+    "mediaLinks": []
   }
 ]

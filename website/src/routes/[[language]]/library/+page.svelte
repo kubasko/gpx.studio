@@ -27,6 +27,8 @@
         Radio,
         Film,
         BookOpen,
+        Route,
+        Mountain,
     } from '@lucide/svelte';
     import { getAuthHeaders, hasWriteAccess } from '$lib/auth';
     import * as Dialog from '$lib/components/ui/dialog';
@@ -61,6 +63,8 @@
             url: string;
             title?: string;
         }[];
+        distance?: number;
+        elevation?: number;
     };
 
     // Get display name - prefer customName if set, otherwise use filename-based name
@@ -487,11 +491,22 @@
                                             >
                                                 <Share2 size="12" />
                                             </Button>
-                                        </div>
                                     </div>
-                                    <p class="text-xs text-muted-foreground mb-3">
-                                        {formatDateRange(item)}
-                                    </p>
+                                    <div class="flex items-center gap-3 text-xs text-muted-foreground mb-2">
+                                        <span>{formatDateRange(item)}</span>
+                                        {#if item.distance}
+                                            <span class="flex items-center gap-1">
+                                                <Route size="12" />
+                                                {item.distance} km
+                                            </span>
+                                        {/if}
+                                        {#if item.elevation}
+                                            <span class="flex items-center gap-1">
+                                                <Mountain size="12" />
+                                                {item.elevation} m
+                                            </span>
+                                        {/if}
+                                    </div>
 
                                     <div class="flex flex-wrap gap-1 mb-4">
                                         {#each item.tags as tag}

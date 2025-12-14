@@ -45,6 +45,9 @@ export type LibraryItem = {
     imageSize?: 'small' | 'medium' | 'large';
     // Media links (stories, movies)
     mediaLinks?: MediaLink[];
+    // GPX stats
+    distance?: number; // Distance in km
+    elevation?: number; // Total elevation gain in m
 };
 
 // Ensure directory exists
@@ -71,6 +74,78 @@ async function readDb(): Promise<LibraryItem[]> {
 async function writeDb(data: LibraryItem[]) {
     await ensureDir();
     await fs.writeFile(DB_FILE, JSON.stringify(data, null, 2));
+}
+
+// Haversine formula to calculate distance between two points
+function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Earth's radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+// Parse GPX content and extract distance and elevation
+function parseGpxStats(gpxContent: string): { distance: number; elevation: number } {
+    let totalDistance = 0;
+    let totalElevation = 0;
+
+    // Simple regex-based parsing for track points
+    const trkptRegex = /<trkpt[^>]*lat="([^"]+)"[^>]*lon="([^"]+)"[^>]*>[\s\S]*?<\/trkpt>/g;
+    const eleRegex = /<ele>([^<]+)<\/ele>/;
+
+    const points: { lat: number; lon: number; ele: number | null }[] = [];
+    let match;
+
+    while ((match = trkptRegex.exec(gpxContent)) !== null) {
+        const lat = parseFloat(match[1]);
+        const lon = parseFloat(match[2]);
+        const eleMatch = match[0].match(eleRegex);
+        const ele = eleMatch ? parseFloat(eleMatch[1]) : null;
+        points.push({ lat, lon, ele });
+    }
+
+    // Also try lon/lat order (some GPX files use this)
+    if (points.length === 0) {
+        const trkptRegex2 = /<trkpt[^>]*lon="([^"]+)"[^>]*lat="([^"]+)"[^>]*>[\s\S]*?<\/trkpt>/g;
+        while ((match = trkptRegex2.exec(gpxContent)) !== null) {
+            const lon = parseFloat(match[1]);
+            const lat = parseFloat(match[2]);
+            const eleMatch = match[0].match(eleRegex);
+            const ele = eleMatch ? parseFloat(eleMatch[1]) : null;
+            points.push({ lat, lon, ele });
+        }
+    }
+
+    // Calculate distance and elevation
+    for (let i = 1; i < points.length; i++) {
+        // Distance
+        totalDistance += haversineDistance(
+            points[i - 1].lat,
+            points[i - 1].lon,
+            points[i].lat,
+            points[i].lon
+        );
+
+        // Elevation gain (only positive)
+        if (points[i].ele !== null && points[i - 1].ele !== null) {
+            const elevDiff = points[i].ele! - points[i - 1].ele!;
+            if (elevDiff > 0) {
+                totalElevation += elevDiff;
+            }
+        }
+    }
+
+    return {
+        distance: Math.round(totalDistance * 10) / 10, // Round to 1 decimal
+        elevation: Math.round(totalElevation),
+    };
 }
 
 export async function GET() {
@@ -101,6 +176,8 @@ export async function POST({ request }) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
+    const gpxContent = buffer.toString('utf-8');
+
     // Sanitize filename
     const safeName = file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
     const uniqueName = `${Date.now()}_${safeName}`;
@@ -109,12 +186,17 @@ export async function POST({ request }) {
     await ensureDir();
     await fs.writeFile(filePath, buffer);
 
+    // Parse GPX stats
+    const stats = parseGpxStats(gpxContent);
+
     const newItem: LibraryItem = {
         id: crypto.randomUUID(),
         name: file.name,
         filename: uniqueName,
         tags,
         date: new Date().toISOString(),
+        distance: stats.distance,
+        elevation: stats.elevation,
     };
 
     const db = await readDb();
