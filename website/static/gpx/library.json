@@ -189,27 +189,15 @@
     "mediaLinks": []
   },
   {
-    "id": "0062e534-a3b7-4fb1-a450-d395f2f47403",
-    "name": "GLG 2025 SPRINT 12.09.2025.gpx",
-    "filename": "1765738937076_glg_2025_sprint_12.09.2025.gpx",
+    "id": "7845ce20-d4bd-49f9-a791-0c7edcc9af82",
+    "name": "GLG 2025 KLASYK 12.09.2025.gpx",
+    "filename": "1765739360660_glg_2025_klasyk_12.09.2025.gpx",
     "tags": [
       "GLG",
       "2025"
     ],
-    "date": "2025-12-14T19:02:17.077Z",
-    "description": "",
-    "style": {
-      "color": "#ff0000",
-      "opacity": 0.8,
-      "width": 3
-    },
-    "customName": "Great Lakes Gravel Sprint",
-    "category": "cycling",
-    "isRace": false,
-    "raceStartDate": "",
-    "raceEndDate": "",
-    "raceTips": "",
-    "imageSize": "medium",
-    "mediaLinks": []
+    "date": "2025-12-14T19:09:20.689Z",
+    "distance": 164.6,
+    "elevation": 1334
   }
 ]

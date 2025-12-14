@@ -491,8 +491,11 @@
                                             >
                                                 <Share2 size="12" />
                                             </Button>
+                                        </div>
                                     </div>
-                                    <div class="flex items-center gap-3 text-xs text-muted-foreground mb-2">
+                                    <div
+                                        class="flex items-center gap-3 text-xs text-muted-foreground mb-2"
+                                    >
                                         <span>{formatDateRange(item)}</span>
                                         {#if item.distance}
                                             <span class="flex items-center gap-1">
