@@ -106,6 +106,7 @@
             token: PUBLIC_MAPBOX_TOKEN,
             files: [fileUrl],
             basemap: 'mapyOutdoor',
+            distanceMarkers: true,
         };
 
         return `${baseUrl}/embed?options=${encodeURIComponent(JSON.stringify(options))}`;
@@ -186,7 +187,7 @@
                     <iframe
                         src={getEmbedUrl(item)}
                         width="100%"
-                        height="500"
+                        height="700"
                         frameborder="0"
                         style="outline: none;"
                         title="GPX Map"
