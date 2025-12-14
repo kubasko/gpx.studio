@@ -153,7 +153,7 @@
 
     function getOpenLink(item: LibraryItem) {
         // Use relative path for shorter links
-        const fileUrl = `/gpx/${item.filename}`;
+        const fileUrl = `/api/gpx/${item.filename}`;
         const params = new URLSearchParams();
         params.set('files', JSON.stringify([fileUrl]));
 
@@ -279,7 +279,7 @@
                                     title="Open all files with this tag"
                                     onclick={() => {
                                         const urls = filteredItems.map(
-                                            (item) => `${page.url.origin}/gpx/${item.filename}`
+                                            (item) => `${page.url.origin}/api/gpx/${item.filename}`
                                         );
                                         // Serialize metadata for ALL files
                                         const metadata: Record<string, any> = {};
@@ -326,7 +326,7 @@
                             >
                                 {#if item.image}
                                     <img
-                                        src="/gpx/images/{item.image}"
+                                        src="/api/gpx/images/{item.image}"
                                         alt="{getDisplayName(item)} thumbnail"
                                         class="w-full object-cover {item.imageSize === 'small'
                                             ? 'h-20'
@@ -397,7 +397,7 @@
                                                 class="h-6 w-6"
                                                 onclick={() => {
                                                     const link = document.createElement('a');
-                                                    link.href = `/gpx/${item.filename}`;
+                                                    link.href = `/api/gpx/${item.filename}`;
                                                     link.download = item.name;
                                                     link.click();
                                                 }}

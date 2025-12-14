@@ -135,7 +135,7 @@
 
     function handleDownload() {
         const link = document.createElement('a');
-        link.href = `/gpx/${item.filename}`;
+        link.href = `/api/gpx/${item.filename}`;
         link.download = item.filename;
         document.body.appendChild(link);
         link.click();
@@ -233,7 +233,7 @@
                 {#if image}
                     <div class="relative">
                         <img
-                            src="/gpx/images/{image}"
+                            src="/api/gpx/images/{image}"
                             alt="Item thumbnail"
                             class="w-full h-32 object-cover rounded-lg border"
                         />

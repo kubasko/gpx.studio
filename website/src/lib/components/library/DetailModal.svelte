@@ -63,7 +63,7 @@
         {#if item.image}
             <div class="relative">
                 <img
-                    src="/gpx/images/{item.image}"
+                    src="/api/gpx/images/{item.image}"
                     alt={getDisplayName(item)}
                     class="w-full h-48 object-cover"
                 />
