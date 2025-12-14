@@ -289,7 +289,7 @@
             <!-- Additional Info -->
             {#if item.description || item.raceTips || item.raceResultsUrl || item.raceTrackerUrl || (item.mediaLinks && item.mediaLinks.length > 0)}
                 <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Description Column -->
+                    <!-- Left Column: Description and Race Tips -->
                     <div class="space-y-6">
                         <!-- Description -->
                         {#if item.description}
@@ -346,8 +346,10 @@
                                 </div>
                             </div>
                         {/if}
+                    </div>
 
-                        <!-- Media Links -->
+                    <!-- Right Column: Stories & Movies -->
+                    <div class="space-y-6">
                         {#if item.mediaLinks && item.mediaLinks.length > 0}
                             <div class="space-y-2">
                                 <h3 class="font-semibold">Stories & Movies</h3>
