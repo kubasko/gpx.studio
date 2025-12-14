@@ -105,6 +105,7 @@ function parseGpxStats(gpxContent: string) {
         }
     }
 
+    // Calculate distance
     for (let i = 1; i < points.length; i++) {
         totalDistance += haversineDistance(
             points[i - 1].lat,
@@ -112,13 +113,33 @@ function parseGpxStats(gpxContent: string) {
             points[i].lat,
             points[i].lon
         );
+    }
 
-        if (points[i].ele !== null && points[i - 1].ele !== null) {
-            const elevDiff = points[i].ele! - points[i - 1].ele!;
-            if (elevDiff > 0) {
-                totalElevation += elevDiff;
-            }
+    // Calculate elevation with noise filtering
+    // Uses a threshold-based approach to reduce GPS noise
+    const ELEVATION_THRESHOLD = 5; // Only count climbs > 5m to filter noise
+    let accumulatedClimb = 0;
+    let lastSignificantEle: number | null = null;
+
+    for (let i = 0; i < points.length; i++) {
+        if (points[i].ele === null) continue;
+
+        if (lastSignificantEle === null) {
+            lastSignificantEle = points[i].ele;
+            continue;
         }
+
+        const diff = points[i].ele! - lastSignificantEle;
+
+        if (diff > ELEVATION_THRESHOLD) {
+            // Significant climb - add to total and reset reference point
+            totalElevation += diff;
+            lastSignificantEle = points[i].ele;
+        } else if (diff < -ELEVATION_THRESHOLD) {
+            // Significant descent - just reset reference point
+            lastSignificantEle = points[i].ele;
+        }
+        // Small changes are ignored (noise filtering)
     }
 
     return {
