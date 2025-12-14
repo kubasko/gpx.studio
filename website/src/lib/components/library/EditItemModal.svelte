@@ -19,6 +19,9 @@
         Film,
         BookOpen,
         X,
+        FileUp,
+        Route,
+        Mountain,
     } from '@lucide/svelte';
     import { getAuthHeaders } from '$lib/auth';
 
@@ -53,6 +56,8 @@
         image?: string;
         imageSize?: 'small' | 'medium' | 'large';
         mediaLinks?: MediaLink[];
+        distance?: number;
+        elevation?: number;
     };
 
     let {
@@ -96,6 +101,10 @@
     // Media links state
     let mediaLinks = $state<MediaLink[]>([]);
 
+    // GPX file state
+    let gpxUploading = $state(false);
+    let gpxError = $state('');
+
     $effect(() => {
         if (open && item) {
             tags = item.tags.join(', ');
@@ -117,6 +126,7 @@
             imageSize = item.imageSize || 'medium';
             mediaLinks = item.mediaLinks ? [...item.mediaLinks] : [];
             imageError = '';
+            gpxError = '';
         }
     });
 
@@ -261,6 +271,40 @@
             link.id === id ? { ...link, [field]: value } : link
         );
     }
+
+    async function handleGpxUpload(e: Event) {
+        const input = e.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        gpxUploading = true;
+        gpxError = '';
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('itemId', item.id);
+
+            const res = await fetch('/api/library/gpx', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: formData,
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                onSave(data.item);
+            } else {
+                gpxError = data.error || 'GPX upload failed';
+            }
+        } catch (err) {
+            gpxError = 'Failed to upload GPX file';
+        } finally {
+            gpxUploading = false;
+            input.value = '';
+        }
+    }
 </script>
 
 <Dialog.Root bind:open>
@@ -281,6 +325,86 @@
                     placeholder="Custom name for this file"
                 />
                 <p class="text-xs text-muted-foreground">Leave empty to use original filename</p>
+            </div>
+
+            <!-- GPX File -->
+            <div class="grid gap-2">
+                <Label>GPX File</Label>
+                {#if item.filename}
+                    <div
+                        class="flex items-center justify-between p-3 rounded-lg border bg-muted/30"
+                    >
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-2 text-sm">
+                                {#if item.distance}
+                                    <span class="flex items-center gap-1 text-muted-foreground">
+                                        <Route size="14" />
+                                        {item.distance} km
+                                    </span>
+                                {/if}
+                                {#if item.elevation}
+                                    <span class="flex items-center gap-1 text-muted-foreground">
+                                        <Mountain size="14" />
+                                        {item.elevation} m
+                                    </span>
+                                {/if}
+                                {#if !item.distance && !item.elevation}
+                                    <span class="text-muted-foreground">GPX attached</span>
+                                {/if}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Button variant="outline" size="sm" onclick={handleDownload}>
+                                <Download size="14" class="mr-1" />
+                                Download
+                            </Button>
+                            <label class="cursor-pointer">
+                                <Button variant="outline" size="sm" class="pointer-events-none">
+                                    {#if gpxUploading}
+                                        <Loader2 size="14" class="mr-1 animate-spin" />
+                                        Uploading...
+                                    {:else}
+                                        <FileUp size="14" class="mr-1" />
+                                        Replace
+                                    {/if}
+                                </Button>
+                                <input
+                                    type="file"
+                                    class="hidden"
+                                    accept=".gpx"
+                                    onchange={handleGpxUpload}
+                                    disabled={gpxUploading}
+                                />
+                            </label>
+                        </div>
+                    </div>
+                {:else}
+                    <label
+                        class="flex flex-col items-center justify-center w-full h-20 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
+                    >
+                        <div class="flex flex-col items-center justify-center">
+                            {#if gpxUploading}
+                                <Loader2 class="h-6 w-6 text-muted-foreground animate-spin mb-1" />
+                                <p class="text-sm text-muted-foreground">Uploading...</p>
+                            {:else}
+                                <FileUp class="h-6 w-6 text-muted-foreground mb-1" />
+                                <p class="text-sm text-muted-foreground">
+                                    Click to upload GPX file
+                                </p>
+                            {/if}
+                        </div>
+                        <input
+                            type="file"
+                            class="hidden"
+                            accept=".gpx"
+                            onchange={handleGpxUpload}
+                            disabled={gpxUploading}
+                        />
+                    </label>
+                {/if}
+                {#if gpxError}
+                    <p class="text-xs text-destructive">{gpxError}</p>
+                {/if}
             </div>
 
             <!-- Image Upload -->

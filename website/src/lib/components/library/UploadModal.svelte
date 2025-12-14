@@ -13,20 +13,26 @@
     import { Label } from '$lib/components/ui/label';
     import { i18n } from '$lib/i18n.svelte';
     import { getAuthHeaders } from '$lib/auth';
+    import { Plus } from '@lucide/svelte';
 
     let { onUpload } = $props<{ onUpload: (data: any) => void }>();
 
     let open = $state(false);
+    let name = $state('');
     let file = $state<File | null>(null);
     let tags = $state('');
     let uploading = $state(false);
 
     async function handleSubmit() {
-        if (!file) return;
+        if (!name.trim()) return;
 
         uploading = true;
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('name', name.trim());
+
+        if (file) {
+            formData.append('file', file);
+        }
 
         // Split tags by comma and trim
         const tagArray = tags
@@ -46,14 +52,16 @@
                 const data = await res.json();
                 onUpload(data);
                 open = false;
+                name = '';
                 file = null;
                 tags = '';
             } else {
-                alert('Upload failed');
+                const error = await res.json();
+                alert(error.error || 'Failed to add ride');
             }
         } catch (e) {
             console.error(e);
-            alert('Error uploading file');
+            alert('Error adding ride');
         } finally {
             uploading = false;
         }
@@ -62,39 +70,44 @@
 
 <Dialog bind:open>
     <DialogTrigger>
-        <Button variant="default">Upload GPX</Button>
+        <Button variant="default" class="gap-2">
+            <Plus size="16" />
+            Add Ride
+        </Button>
     </DialogTrigger>
     <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
-            <DialogTitle>Upload GPX File</DialogTitle>
+            <DialogTitle>Add New Ride</DialogTitle>
             <DialogDescription>
-                Select a GPX file and add optional tags to organize it.
+                Enter a name for the ride. You can add the GPX file now or later.
             </DialogDescription>
         </DialogHeader>
         <div class="grid gap-4 py-4">
-            <div class="grid grid-cols-4 items-center gap-4">
-                <Label for="file" class="text-right">File</Label>
+            <div class="grid gap-2">
+                <Label for="name">Ride Name *</Label>
+                <Input id="name" placeholder="e.g. Mountain Trail 2024" bind:value={name} />
+            </div>
+            <div class="grid gap-2">
+                <Label for="file">GPX File (optional)</Label>
                 <Input
                     id="file"
                     type="file"
                     accept=".gpx"
-                    class="col-span-3"
                     onchange={(e) => (file = e.currentTarget.files?.[0] || null)}
                 />
+                <p class="text-xs text-muted-foreground">
+                    You can add or replace the GPX file later from the edit menu.
+                </p>
             </div>
-            <div class="grid grid-cols-4 items-center gap-4">
-                <Label for="tags" class="text-right">Tags</Label>
-                <Input
-                    id="tags"
-                    placeholder="hike, mountains, weekend"
-                    class="col-span-3"
-                    bind:value={tags}
-                />
+            <div class="grid gap-2">
+                <Label for="tags">Tags</Label>
+                <Input id="tags" placeholder="race, mountains, 2024" bind:value={tags} />
             </div>
         </div>
         <DialogFooter>
-            <Button type="submit" onclick={handleSubmit} disabled={!file || uploading}>
-                {uploading ? 'Uploading...' : 'Upload'}
+            <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
+            <Button type="submit" onclick={handleSubmit} disabled={!name.trim() || uploading}>
+                {uploading ? 'Adding...' : 'Add Ride'}
             </Button>
         </DialogFooter>
     </DialogContent>

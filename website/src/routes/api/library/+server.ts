@@ -168,35 +168,48 @@ export async function POST({ request }) {
     }
 
     const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const file = formData.get('file') as File | null;
+    const name = formData.get('name') as string;
     const tags = JSON.parse((formData.get('tags') as string) || '[]');
 
-    if (!file) {
-        return json({ error: 'No file provided' }, { status: 400 });
+    if (!name || !name.trim()) {
+        return json({ error: 'Name is required' }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const gpxContent = buffer.toString('utf-8');
-
-    // Sanitize filename
-    const safeName = file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
-    const uniqueName = `${Date.now()}_${safeName}`;
-    const filePath = path.join(LIBRARY_DIR, uniqueName);
-
     await ensureDir();
-    await fs.writeFile(filePath, buffer);
 
-    // Parse GPX stats
-    const stats = parseGpxStats(gpxContent);
+    let filename: string | undefined;
+    let distance: number | undefined;
+    let elevation: number | undefined;
+
+    // Handle GPX file if provided
+    if (file && file.size > 0) {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const gpxContent = buffer.toString('utf-8');
+
+        // Sanitize filename
+        const safeName = file.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+        const uniqueName = `${Date.now()}_${safeName}`;
+        const filePath = path.join(LIBRARY_DIR, uniqueName);
+
+        await fs.writeFile(filePath, buffer);
+
+        // Parse GPX stats
+        const stats = parseGpxStats(gpxContent);
+        filename = uniqueName;
+        distance = stats.distance;
+        elevation = stats.elevation;
+    }
 
     const newItem: LibraryItem = {
         id: crypto.randomUUID(),
-        name: file.name,
-        filename: uniqueName,
+        name: name.trim(),
+        filename: filename || '',
         tags,
         date: new Date().toISOString(),
-        distance: stats.distance,
-        elevation: stats.elevation,
+        customName: name.trim(),
+        distance,
+        elevation,
     };
 
     const db = await readDb();
