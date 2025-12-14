@@ -29,6 +29,7 @@
         BookOpen,
         Route,
         Mountain,
+        MapPin,
     } from '@lucide/svelte';
     import { getAuthHeaders, hasWriteAccess } from '$lib/auth';
     import * as Dialog from '$lib/components/ui/dialog';
@@ -65,6 +66,7 @@
         }[];
         distance?: number;
         elevation?: number;
+        country?: string;
     };
 
     // Get display name - prefer customName if set, otherwise use filename-based name
@@ -493,6 +495,12 @@
                                             <span class="flex items-center gap-1">
                                                 <Mountain size="12" />
                                                 {item.elevation} m
+                                            </span>
+                                        {/if}
+                                        {#if item.country}
+                                            <span class="flex items-center gap-1">
+                                                <MapPin size="12" />
+                                                {item.country}
                                             </span>
                                         {/if}
                                     </div>

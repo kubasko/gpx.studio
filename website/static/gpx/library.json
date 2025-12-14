@@ -199,5 +199,26 @@
     "date": "2025-12-14T19:09:20.689Z",
     "distance": 164.6,
     "elevation": 1334
+  },
+  {
+    "id": "0fd4c7a1-353d-47b5-9714-b718335782c0",
+    "name": "Testowy bez gpx",
+    "filename": "",
+    "tags": [],
+    "date": "2025-12-14T19:23:31.165Z",
+    "customName": "Testowy bez gpx",
+    "description": "",
+    "style": {
+      "color": "#ff0000",
+      "opacity": 0.8,
+      "width": 3
+    },
+    "category": "running",
+    "isRace": true,
+    "raceStartDate": "2026-01-01",
+    "raceEndDate": "2026-01-18",
+    "raceTips": "",
+    "imageSize": "medium",
+    "mediaLinks": []
   }
 ]

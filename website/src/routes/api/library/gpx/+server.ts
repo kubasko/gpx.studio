@@ -39,6 +39,7 @@ type LibraryItem = {
     }[];
     distance?: number;
     elevation?: number;
+    country?: string;
 };
 
 async function readDb(): Promise<LibraryItem[]> {
@@ -75,7 +76,7 @@ function haversineDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c;
 }
 
-function parseGpxStats(gpxContent: string): { distance: number; elevation: number } {
+function parseGpxStats(gpxContent: string) {
     let totalDistance = 0;
     let totalElevation = 0;
 
@@ -123,7 +124,29 @@ function parseGpxStats(gpxContent: string): { distance: number; elevation: numbe
     return {
         distance: Math.round(totalDistance * 10) / 10,
         elevation: Math.round(totalElevation),
+        firstPoint: points.length > 0 ? { lat: points[0].lat, lon: points[0].lon } : null,
     };
+}
+
+// Get country from coordinates using Nominatim reverse geocoding
+async function getCountryFromCoordinates(lat: number, lon: number): Promise<string | undefined> {
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=3`,
+            {
+                headers: {
+                    'User-Agent': 'GPX-Studio-Library/1.0',
+                },
+            }
+        );
+
+        if (!response.ok) return undefined;
+
+        const data = await response.json();
+        return data.address?.country;
+    } catch {
+        return undefined;
+    }
 }
 
 export async function POST({ request }) {
@@ -176,6 +199,14 @@ export async function POST({ request }) {
     db[index].filename = uniqueName;
     db[index].distance = stats.distance;
     db[index].elevation = stats.elevation;
+
+    // Get country from first point
+    if (stats.firstPoint) {
+        db[index].country = await getCountryFromCoordinates(
+            stats.firstPoint.lat,
+            stats.firstPoint.lon
+        );
+    }
 
     await writeDb(db);
 

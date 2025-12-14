@@ -48,6 +48,7 @@ export type LibraryItem = {
     // GPX stats
     distance?: number; // Distance in km
     elevation?: number; // Total elevation gain in m
+    country?: string; // Country detected from coordinates
 };
 
 // Ensure directory exists
@@ -145,7 +146,29 @@ function parseGpxStats(gpxContent: string): { distance: number; elevation: numbe
     return {
         distance: Math.round(totalDistance * 10) / 10, // Round to 1 decimal
         elevation: Math.round(totalElevation),
+        firstPoint: points.length > 0 ? { lat: points[0].lat, lon: points[0].lon } : null,
     };
+}
+
+// Get country from coordinates using Nominatim reverse geocoding
+async function getCountryFromCoordinates(lat: number, lon: number): Promise<string | undefined> {
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=3`,
+            {
+                headers: {
+                    'User-Agent': 'GPX-Studio-Library/1.0',
+                },
+            }
+        );
+
+        if (!response.ok) return undefined;
+
+        const data = await response.json();
+        return data.address?.country;
+    } catch {
+        return undefined;
+    }
 }
 
 export async function GET() {
@@ -181,6 +204,7 @@ export async function POST({ request }) {
     let filename: string | undefined;
     let distance: number | undefined;
     let elevation: number | undefined;
+    let country: string | undefined;
 
     // Handle GPX file if provided
     if (file && file.size > 0) {
@@ -199,6 +223,11 @@ export async function POST({ request }) {
         filename = uniqueName;
         distance = stats.distance;
         elevation = stats.elevation;
+
+        // Get country from first point
+        if (stats.firstPoint) {
+            country = await getCountryFromCoordinates(stats.firstPoint.lat, stats.firstPoint.lon);
+        }
     }
 
     const newItem: LibraryItem = {
@@ -210,6 +239,7 @@ export async function POST({ request }) {
         customName: name.trim(),
         distance,
         elevation,
+        country,
     };
 
     const db = await readDb();
