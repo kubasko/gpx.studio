@@ -544,7 +544,6 @@
                                     <div class="flex gap-2 mt-auto">
                                         <Button
                                             href={`/library/${item.id}`}
-                                            target="_blank"
                                             class="flex-1"
                                             variant="outline"
                                         >

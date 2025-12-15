@@ -1,0 +1,11 @@
+services:
+  gpx-studio:
+    build: 
+      context: ./website
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - LIBRARY_PATH=/app/data
+      - ORIGIN=http://localhost:3000
