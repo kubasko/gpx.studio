@@ -40,18 +40,30 @@ class Locale {
             const loadLocale = modules[`../locales/${this._lang}.json`];
 
             if (loadLocale) {
-                loadLocale().then((module: any) => {
-                    this.dictionary = module.default;
-                    if (this._isLoadingInitial) {
-                        this._isLoadingInitial = false;
-                    }
-                    if (this._isLoading) {
-                        this._isLoading = false;
-                    }
-                });
+                loadLocale()
+                    .then((module: any) => {
+                        this.dictionary = module.default;
+                        if (this._isLoadingInitial) {
+                            this._isLoadingInitial = false;
+                        }
+                        if (this._isLoading) {
+                            this._isLoading = false;
+                        }
+                    })
+                    .catch((err) => {
+                        console.error(`Failed to load locale ${this._lang}:`, err);
+                        if (this._isLoadingInitial) {
+                            this._isLoadingInitial = false;
+                        }
+                        if (this._isLoading) {
+                            this._isLoading = false;
+                        }
+                    });
             } else {
                 console.error(`Locale file for ${this._lang} not found`);
-                // potentially handle fallback or error state
+                if (this._isLoadingInitial) {
+                    this._isLoadingInitial = false;
+                }
                 if (this._isLoading) {
                     this._isLoading = false;
                 }
@@ -77,6 +89,11 @@ class Locale {
 
     public get df() {
         return this._df;
+    }
+
+    public forceReady() {
+        this._isLoadingInitial = false;
+        this._isLoading = false;
     }
 }
 

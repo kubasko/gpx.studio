@@ -33,6 +33,16 @@
                 folders.indexOf('l') >= 0 ? (folders[folders.indexOf('l') + 1] ?? 'en') : 'en';
             window.location.href = `${getURLForLanguage(locale, '/embed')}?options=${encodeURIComponent(JSON.stringify(convertOldEmbeddingOptions(page.url.searchParams)))}`;
         }
+
+        // Fail-safe: Force app to load if i18n hangs
+        const timeout = setTimeout(() => {
+            if (i18n.isLoadingInitial) {
+                console.warn('i18n loading timed out, forcing ready state');
+                i18n.forceReady();
+            }
+        }, 3000);
+
+        return () => clearTimeout(timeout);
     });
 
     $effect(() => {
@@ -80,5 +90,10 @@
         {#if showNavAndFooter}
             <Footer />
         {/if}
+    {:else}
+        <div class="flex flex-col items-center justify-center h-screen gap-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <div class="text-muted-foreground">Initializing language...</div>
+        </div>
     {/if}
 </div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import PasswordGate from '$lib/components/PasswordGate.svelte';
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
     import { i18n } from '$lib/i18n.svelte';
@@ -31,6 +30,8 @@
         Mountain,
         MapPin,
         Calendar,
+        LayoutGrid,
+        List,
     } from '@lucide/svelte';
     import { getAuthHeaders, hasWriteAccess } from '$lib/auth';
     import * as Dialog from '$lib/components/ui/dialog';
@@ -98,11 +99,14 @@
     let selectedTag = $state<string | null>(null);
     let selectedCategory = $state<'cycling' | 'running' | null>(null);
     let showRacesOnly = $state(false);
+    let minDistance = $state<number | null>(null);
+    let maxDistance = $state<number | null>(null);
     let allTags = $state<string[]>([]);
     let editingItem = $state<LibraryItem | null>(null);
     let isEditing = $state(false);
     let viewingItem = $state<LibraryItem | null>(null);
     let isViewing = $state(false);
+    let viewMode = $state<'grid' | 'list'>('grid');
     let shareModalOpen = $state(false);
     let sharedLink = $state('');
     let canWrite = $state(false);
@@ -140,6 +144,13 @@
         // Races only filter
         if (showRacesOnly) {
             res = res.filter((i) => i.isRace);
+        }
+        // Distance filter
+        if (minDistance !== null) {
+            res = res.filter((i) => (i.distance || 0) >= minDistance!);
+        }
+        if (maxDistance !== null) {
+            res = res.filter((i) => (i.distance || 0) <= maxDistance!);
         }
         // Tag filter
         if (selectedTag) {
@@ -253,226 +264,271 @@
     }
 </script>
 
-<PasswordGate onAuthenticated={handleAuthChange}>
-    <div class="container mx-auto py-8 px-4">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <h1 class="text-3xl font-bold capitalize">{i18n._('metadata.library_title')}</h1>
-            <div class="flex items-center gap-2">
-                {#if canWrite}
-                    <UploadModal onUpload={handleUpload} />
-                {/if}
+<!-- PasswordGate removed -->
+<div class="container mx-auto py-8 px-4">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <h1 class="text-3xl font-bold capitalize">{i18n._('metadata.library_title')}</h1>
+        <div class="flex items-center gap-2">
+            <div class="flex bg-muted rounded-lg p-1 mr-2">
+                <Button
+                    variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                    size="icon"
+                    class="h-8 w-8"
+                    onclick={() => (viewMode = 'grid')}
+                    title="Grid View"
+                >
+                    <LayoutGrid size="16" />
+                </Button>
+                <Button
+                    variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                    size="icon"
+                    class="h-8 w-8"
+                    onclick={() => (viewMode = 'list')}
+                    title="List View"
+                >
+                    <List size="16" />
+                </Button>
+            </div>
+            {#if canWrite}
+                <UploadModal onUpload={handleUpload} />
+            {/if}
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6">
+        <!-- Sidebar / Top bar for filters -->
+        <div class="w-full md:w-64 space-y-4 shrink-0">
+            <div class="relative">
+                <Input placeholder={i18n._('library.search_placeholder')} bind:value={search} />
+            </div>
+
+            <!-- Category Filter -->
+            <div class="space-y-2">
+                <h3 class="font-semibold mb-2">{i18n._('toolbar.routing.activity')}</h3>
+                <div class="flex gap-2">
+                    <Button
+                        variant={selectedCategory === 'cycling' ? 'default' : 'outline'}
+                        class="flex-1 gap-1"
+                        size="sm"
+                        onclick={() =>
+                            (selectedCategory = selectedCategory === 'cycling' ? null : 'cycling')}
+                    >
+                        <Bike size="14" />
+                        {i18n._('library.cycling')}
+                    </Button>
+                    <Button
+                        variant={selectedCategory === 'running' ? 'default' : 'outline'}
+                        class="flex-1 gap-1"
+                        size="sm"
+                        onclick={() =>
+                            (selectedCategory = selectedCategory === 'running' ? null : 'running')}
+                    >
+                        <Footprints size="14" />
+                        {i18n._('library.running')}
+                    </Button>
+                </div>
+                <Button
+                    variant={showRacesOnly ? 'default' : 'outline'}
+                    class="w-full gap-1"
+                    size="sm"
+                    onclick={() => (showRacesOnly = !showRacesOnly)}
+                >
+                    <Trophy size="14" />
+                    {i18n._('library.races_only')}
+                </Button>
+            </div>
+
+            <!-- Distance Filter -->
+            <div class="space-y-2">
+                <h3 class="font-semibold mb-2">{i18n._('quantities.distance')} (km)</h3>
+                <div class="flex gap-2">
+                    <div class="space-y-1">
+                        <Input
+                            type="number"
+                            placeholder="Min"
+                            min="0"
+                            class="h-8"
+                            bind:value={minDistance}
+                        />
+                    </div>
+                    <div class="space-y-1">
+                        <Input
+                            type="number"
+                            placeholder="Max"
+                            min="0"
+                            class="h-8"
+                            bind:value={maxDistance}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="font-semibold mb-2">Tags</h3>
+                <Button
+                    variant={selectedTag === null ? 'default' : 'outline'}
+                    class="w-full justify-start"
+                    onclick={() => (selectedTag = null)}
+                >
+                    {i18n._('library.all_files')}
+                </Button>
+                {#each allTags as tag}
+                    <div class="flex gap-1">
+                        <Button
+                            variant={selectedTag === tag ? 'default' : 'outline'}
+                            class="grow justify-start capitalize truncate"
+                            onclick={() => (selectedTag = tag)}
+                            title={tag}
+                        >
+                            {tag}
+                        </Button>
+                        {#if selectedTag === tag}
+                            <Button
+                                variant="secondary"
+                                size="icon"
+                                title="Open all files with this tag"
+                                onclick={() => {
+                                    const urls = filteredItems.map(
+                                        (item) => `${page.url.origin}/api/gpx/${item.filename}`
+                                    );
+                                    // Serialize metadata for ALL files
+                                    const metadata: Record<string, any> = {};
+                                    filteredItems.forEach((item) => {
+                                        const fileMeta: Record<string, any> = {};
+                                        if (item.customName?.trim()) {
+                                            fileMeta.name = item.customName.trim();
+                                        }
+                                        if (item.description?.trim()) {
+                                            fileMeta.description = item.description.trim();
+                                        }
+                                        if (item.style) {
+                                            fileMeta.style = item.style;
+                                        }
+                                        if (Object.keys(fileMeta).length > 0) {
+                                            metadata[item.filename] = fileMeta;
+                                        }
+                                    });
+
+                                    const params = new URLSearchParams();
+                                    params.set('files', JSON.stringify(urls));
+                                    if (Object.keys(metadata).length > 0) {
+                                        params.set('metadata', JSON.stringify(metadata));
+                                    }
+
+                                    goto(getURLForLanguage(i18n.lang, `/app?${params.toString()}`));
+                                }}
+                            >
+                                <FolderOpen size="14" />
+                            </Button>
+                        {/if}
+                    </div>
+                {/each}
             </div>
         </div>
 
-        <div class="flex flex-col md:flex-row gap-6">
-            <!-- Sidebar / Top bar for filters -->
-            <div class="w-full md:w-64 space-y-4 shrink-0">
-                <div class="relative">
-                    <Input placeholder={i18n._('library.search_placeholder')} bind:value={search} />
-                </div>
-
-                <!-- Category Filter -->
-                <div class="space-y-2">
-                    <h3 class="font-semibold mb-2">{i18n._('toolbar.routing.activity')}</h3>
-                    <div class="flex gap-2">
-                        <Button
-                            variant={selectedCategory === 'cycling' ? 'default' : 'outline'}
-                            class="flex-1 gap-1"
-                            size="sm"
-                            onclick={() =>
-                                (selectedCategory =
-                                    selectedCategory === 'cycling' ? null : 'cycling')}
-                        >
-                            <Bike size="14" />
-                            {i18n._('library.cycling')}
-                        </Button>
-                        <Button
-                            variant={selectedCategory === 'running' ? 'default' : 'outline'}
-                            class="flex-1 gap-1"
-                            size="sm"
-                            onclick={() =>
-                                (selectedCategory =
-                                    selectedCategory === 'running' ? null : 'running')}
-                        >
-                            <Footprints size="14" />
-                            {i18n._('library.running')}
-                        </Button>
-                    </div>
-                    <Button
-                        variant={showRacesOnly ? 'default' : 'outline'}
-                        class="w-full gap-1"
-                        size="sm"
-                        onclick={() => (showRacesOnly = !showRacesOnly)}
-                    >
-                        <Trophy size="14" />
-                        {i18n._('library.races_only')}
-                    </Button>
-                </div>
-
-                <div class="space-y-2">
-                    <h3 class="font-semibold mb-2">Tags</h3>
-                    <Button
-                        variant={selectedTag === null ? 'default' : 'outline'}
-                        class="w-full justify-start"
-                        onclick={() => (selectedTag = null)}
-                    >
-                        {i18n._('library.all_files')}
-                    </Button>
-                    {#each allTags as tag}
-                        <div class="flex gap-1">
-                            <Button
-                                variant={selectedTag === tag ? 'default' : 'outline'}
-                                class="grow justify-start capitalize truncate"
-                                onclick={() => (selectedTag = tag)}
-                                title={tag}
-                            >
-                                {tag}
-                            </Button>
-                            {#if selectedTag === tag}
-                                <Button
-                                    variant="secondary"
-                                    size="icon"
-                                    title="Open all files with this tag"
-                                    onclick={() => {
-                                        const urls = filteredItems.map(
-                                            (item) => `${page.url.origin}/api/gpx/${item.filename}`
-                                        );
-                                        // Serialize metadata for ALL files
-                                        const metadata: Record<string, any> = {};
-                                        filteredItems.forEach((item) => {
-                                            const fileMeta: Record<string, any> = {};
-                                            if (item.customName?.trim()) {
-                                                fileMeta.name = item.customName.trim();
-                                            }
-                                            if (item.description?.trim()) {
-                                                fileMeta.description = item.description.trim();
-                                            }
-                                            if (item.style) {
-                                                fileMeta.style = item.style;
-                                            }
-                                            if (Object.keys(fileMeta).length > 0) {
-                                                metadata[item.filename] = fileMeta;
-                                            }
-                                        });
-
-                                        const params = new URLSearchParams();
-                                        params.set('files', JSON.stringify(urls));
-                                        if (Object.keys(metadata).length > 0) {
-                                            params.set('metadata', JSON.stringify(metadata));
-                                        }
-
-                                        goto(
-                                            getURLForLanguage(
-                                                i18n.lang,
-                                                `/app?${params.toString()}`
-                                            )
-                                        );
-                                    }}
+        <!-- Grid -->
+        <div class="flex-1">
+            {#if filteredItems.length === 0}
+                <div class="text-center text-muted-foreground py-12">No files found.</div>
+            {:else if viewMode === 'list'}
+                <div class="border rounded-lg overflow-hidden bg-card">
+                    <table class="w-full text-sm">
+                        <thead class="bg-muted/50 border-b">
+                            <tr>
+                                <th class="h-10 px-4 text-left font-medium w-16"></th>
+                                <th class="h-10 px-4 text-left font-medium"
+                                    >{i18n._('metadata.name')}</th
                                 >
-                                    <FolderOpen size="14" />
-                                </Button>
-                            {/if}
-                        </div>
-                    {/each}
-                </div>
-            </div>
-
-            <!-- Grid -->
-            <div class="flex-1">
-                {#if filteredItems.length === 0}
-                    <div class="text-center text-muted-foreground py-12">No files found.</div>
-                {:else}
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {#each filteredItems as item}
-                            <div
-                                class="border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-card flex flex-col overflow-hidden"
-                            >
-                                {#if item.image}
-                                    <img
-                                        src="/api/gpx/images/{item.image}"
-                                        alt="{getDisplayName(item)} thumbnail"
-                                        class="w-full object-cover {item.imageSize === 'small'
-                                            ? 'h-20'
-                                            : item.imageSize === 'large'
-                                              ? 'h-48'
-                                              : 'h-32'}"
-                                    />
-                                {/if}
-                                <div class="p-4 flex-1 flex flex-col">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                                <th class="h-10 px-4 text-left font-medium w-32"
+                                    >{i18n._('library.added')}</th
+                                >
+                                <th class="h-10 px-4 text-right font-medium w-24"
+                                    >{i18n._('quantities.distance')}</th
+                                >
+                                <th class="h-10 px-4 text-right font-medium w-24"
+                                    >{i18n._('quantities.elevation')}</th
+                                >
+                                <th class="h-10 px-4 text-right font-medium w-32"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            {#each filteredItems as item}
+                                <tr class="hover:bg-muted/50 transition-colors">
+                                    <td class="p-4">
+                                        <div class="flex items-center gap-1">
                                             {#if item.category === 'cycling'}
-                                                <Bike size="14" class="text-blue-500 shrink-0" />
+                                                <Bike size="16" class="text-blue-500" />
                                             {:else if item.category === 'running'}
-                                                <Footprints
-                                                    size="14"
-                                                    class="text-green-500 shrink-0"
-                                                />
+                                                <Footprints size="16" class="text-green-500" />
                                             {/if}
                                             {#if item.isRace}
-                                                <Trophy size="14" class="text-amber-500 shrink-0" />
+                                                <Trophy size="14" class="text-amber-500" />
                                             {/if}
-                                            <h3
-                                                class="font-semibold text-base truncate"
-                                                title={getDisplayName(item)}
+                                        </div>
+                                    </td>
+                                    <td class="p-4 font-medium">
+                                        <div class="flex items-center gap-2">
+                                            <a
+                                                href={`/library/${item.id}`}
+                                                class="hover:underline truncate"
                                             >
                                                 {getDisplayName(item)}
-                                            </h3>
-                                        </div>
-                                        <div class="flex items-center gap-1 shrink-0">
+                                            </a>
                                             {#if item.raceWebpage}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    class="h-6 w-6"
+                                                <a
                                                     href={item.raceWebpage}
                                                     target="_blank"
-                                                    title="Visit race webpage"
+                                                    class="text-muted-foreground hover:text-foreground"
                                                 >
                                                     <ExternalLink size="12" />
-                                                </Button>
+                                                </a>
                                             {/if}
-                                            {#if item.raceResultsUrl}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    class="h-6 w-6"
-                                                    href={item.raceResultsUrl}
-                                                    target="_blank"
-                                                    title="Race Results"
-                                                >
-                                                    <Medal size="12" class="text-amber-500" />
-                                                </Button>
-                                            {/if}
-                                            {#if item.raceTrackerUrl}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    class="h-6 w-6"
-                                                    href={item.raceTrackerUrl}
-                                                    target="_blank"
-                                                    title="Live Tracker"
-                                                >
-                                                    <Radio size="12" class="text-green-500" />
-                                                </Button>
-                                            {/if}
+                                        </div>
+                                    </td>
+                                    <td class="p-4 text-muted-foreground whitespace-nowrap">
+                                        {item.isRace && item.raceStartDate
+                                            ? new Date(item.raceStartDate).toLocaleDateString()
+                                            : new Date(item.date).toLocaleDateString()}
+                                    </td>
+                                    <td class="p-4 text-right whitespace-nowrap">
+                                        {#if item.distance}
+                                            {item.distance} km
+                                        {/if}
+                                    </td>
+                                    <td class="p-4 text-right whitespace-nowrap">
+                                        {#if item.elevation}
+                                            {item.elevation} m
+                                        {/if}
+                                    </td>
+                                    <td class="p-4 text-right">
+                                        <div class="flex items-center justify-end gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                class="h-8 w-8"
+                                                href={getOpenLink(item)}
+                                                title="View GPX"
+                                            >
+                                                <Eye size="14" />
+                                            </Button>
                                             {#if canWrite}
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    class="h-6 w-6"
+                                                    class="h-8 w-8"
                                                     onclick={() => {
                                                         editingItem = item;
                                                         isEditing = true;
                                                     }}
+                                                    title="Edit"
                                                 >
-                                                    <Edit2 size="12" />
+                                                    <Edit2 size="14" />
                                                 </Button>
                                             {/if}
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                class="h-6 w-6"
+                                                class="h-8 w-8"
                                                 onclick={() => {
                                                     const link = document.createElement('a');
                                                     link.href = `/api/gpx/${item.filename}`;
@@ -481,109 +537,214 @@
                                                 }}
                                                 title="Download"
                                             >
-                                                <Download size="12" />
+                                                <Download size="14" />
                                             </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
+            {:else}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {#each filteredItems as item}
+                        <div
+                            class="border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-card flex flex-col overflow-hidden"
+                        >
+                            {#if item.image}
+                                <img
+                                    src="/api/gpx/images/{item.image}"
+                                    alt="{getDisplayName(item)} thumbnail"
+                                    class="w-full object-cover {item.imageSize === 'small'
+                                        ? 'h-20'
+                                        : item.imageSize === 'large'
+                                          ? 'h-48'
+                                          : 'h-32'}"
+                                />
+                            {/if}
+                            <div class="p-4 flex-1 flex flex-col">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="flex items-center gap-2 min-w-0 flex-1">
+                                        {#if item.category === 'cycling'}
+                                            <Bike size="14" class="text-blue-500 shrink-0" />
+                                        {:else if item.category === 'running'}
+                                            <Footprints size="14" class="text-green-500 shrink-0" />
+                                        {/if}
+                                        {#if item.isRace}
+                                            <Trophy size="14" class="text-amber-500 shrink-0" />
+                                        {/if}
+                                        <h3
+                                            class="font-semibold text-base truncate"
+                                            title={getDisplayName(item)}
+                                        >
+                                            {getDisplayName(item)}
+                                        </h3>
+                                    </div>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        {#if item.raceWebpage}
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
                                                 class="h-6 w-6"
-                                                onclick={() => copyShareLink(item)}
-                                                title="Share"
+                                                href={item.raceWebpage}
+                                                target="_blank"
+                                                title="Visit race webpage"
                                             >
-                                                <Share2 size="12" />
+                                                <ExternalLink size="12" />
                                             </Button>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="flex items-center gap-3 text-xs text-muted-foreground mb-2"
-                                    >
-                                        <span>{formatDateRange(item)}</span>
-                                        {#if item.distance}
-                                            <span class="flex items-center gap-1">
-                                                <Route size="12" />
-                                                {item.distance} km
-                                            </span>
                                         {/if}
-                                        {#if item.elevation}
-                                            <span class="flex items-center gap-1">
-                                                <Mountain size="12" />
-                                                {item.elevation} m
-                                            </span>
-                                        {/if}
-                                        {#if item.country}
-                                            <span class="flex items-center gap-1">
-                                                <MapPin size="12" />
-                                                {item.country}
-                                            </span>
-                                        {/if}
-                                    </div>
-
-                                    <div class="flex flex-wrap gap-1 mb-4">
-                                        {#each item.tags as tag}
-                                            <span
-                                                class="px-2 py-0.5 bg-secondary text-secondary-foreground text-xs rounded-full"
-                                            >
-                                                {tag}
-                                            </span>
-                                        {/each}
-                                    </div>
-
-                                    <div class="flex gap-2 mt-auto">
-                                        <Button
-                                            href={`/library/${item.id}`}
-                                            class="flex-1"
-                                            variant="outline"
-                                        >
-                                            Open
-                                        </Button>
-                                        {#if item.filename}
+                                        {#if item.raceResultsUrl}
                                             <Button
-                                                href={getOpenLink(item)}
-                                                class="flex-1"
-                                                variant="outline"
+                                                variant="ghost"
+                                                size="icon"
+                                                class="h-6 w-6"
+                                                href={item.raceResultsUrl}
+                                                target="_blank"
+                                                title="Race Results"
                                             >
-                                                <Eye size="14" class="mr-1" />
-                                                View GPX
+                                                <Medal size="12" class="text-amber-500" />
                                             </Button>
-                                        {:else}
+                                        {/if}
+                                        {#if item.raceTrackerUrl}
                                             <Button
-                                                onclick={() => {
-                                                    viewingItem = item;
-                                                    isViewing = true;
-                                                }}
-                                                class="flex-1"
-                                                variant="outline"
+                                                variant="ghost"
+                                                size="icon"
+                                                class="h-6 w-6"
+                                                href={item.raceTrackerUrl}
+                                                target="_blank"
+                                                title="Live Tracker"
                                             >
-                                                Info
+                                                <Radio size="12" class="text-green-500" />
                                             </Button>
                                         {/if}
                                         {#if canWrite}
                                             <Button
-                                                onclick={() => handleDelete(item)}
+                                                variant="ghost"
                                                 size="icon"
-                                                variant="destructive"
-                                                title="Delete file"
+                                                class="h-6 w-6"
+                                                onclick={() => {
+                                                    editingItem = item;
+                                                    isEditing = true;
+                                                }}
                                             >
-                                                <Trash2 size="14" />
+                                                <Edit2 size="12" />
                                             </Button>
                                         {/if}
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="h-6 w-6"
+                                            onclick={() => {
+                                                const link = document.createElement('a');
+                                                link.href = `/api/gpx/${item.filename}`;
+                                                link.download = item.name;
+                                                link.click();
+                                            }}
+                                            title="Download"
+                                        >
+                                            <Download size="12" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            class="h-6 w-6"
+                                            onclick={() => copyShareLink(item)}
+                                            title="Share"
+                                        >
+                                            <Share2 size="12" />
+                                        </Button>
                                     </div>
                                 </div>
-                            </div>
-                        {/each}
-                    </div>
-                {/if}
-            </div>
-        </div>
+                                <div
+                                    class="flex items-center gap-3 text-xs text-muted-foreground mb-2"
+                                >
+                                    <span>{formatDateRange(item)}</span>
+                                    {#if item.distance}
+                                        <span class="flex items-center gap-1">
+                                            <Route size="12" />
+                                            {item.distance} km
+                                        </span>
+                                    {/if}
+                                    {#if item.elevation}
+                                        <span class="flex items-center gap-1">
+                                            <Mountain size="12" />
+                                            {item.elevation} m
+                                        </span>
+                                    {/if}
+                                    {#if item.country}
+                                        <span class="flex items-center gap-1">
+                                            <MapPin size="12" />
+                                            {item.country}
+                                        </span>
+                                    {/if}
+                                </div>
 
-        {#if editingItem}
-            <EditItemModal bind:open={isEditing} item={editingItem} onSave={handleEditSave} />
-        {/if}
-        {#if viewingItem}
-            <DetailModal bind:open={isViewing} item={viewingItem} />
-        {/if}
+                                <div class="flex flex-wrap gap-1 mb-4">
+                                    {#each item.tags as tag}
+                                        <span
+                                            class="px-2 py-0.5 bg-secondary text-secondary-foreground text-xs rounded-full"
+                                        >
+                                            {tag}
+                                        </span>
+                                    {/each}
+                                </div>
+
+                                <div class="flex gap-2 mt-auto">
+                                    <Button
+                                        href={`/library/${item.id}`}
+                                        class="flex-1"
+                                        variant="outline"
+                                    >
+                                        Open
+                                    </Button>
+                                    {#if item.filename}
+                                        <Button
+                                            href={getOpenLink(item)}
+                                            class="flex-1"
+                                            variant="outline"
+                                        >
+                                            <Eye size="14" class="mr-1" />
+                                            View GPX
+                                        </Button>
+                                    {:else}
+                                        <Button
+                                            onclick={() => {
+                                                viewingItem = item;
+                                                isViewing = true;
+                                            }}
+                                            class="flex-1"
+                                            variant="outline"
+                                        >
+                                            Info
+                                        </Button>
+                                    {/if}
+                                    {#if canWrite}
+                                        <Button
+                                            onclick={() => handleDelete(item)}
+                                            size="icon"
+                                            variant="destructive"
+                                            title="Delete file"
+                                        >
+                                            <Trash2 size="14" />
+                                        </Button>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+        </div>
     </div>
-</PasswordGate>
+
+    {#if editingItem}
+        <EditItemModal bind:open={isEditing} item={editingItem} onSave={handleEditSave} />
+    {/if}
+    {#if viewingItem}
+        <DetailModal bind:open={isViewing} item={viewingItem} />
+    {/if}
+</div>
 
 <!-- Share Link Modal -->
 <Dialog.Root bind:open={shareModalOpen}>

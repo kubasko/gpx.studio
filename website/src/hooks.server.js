@@ -3,7 +3,10 @@ import { languages } from '$lib/languages';
 import { getURLForLanguage } from '$lib/utils';
 
 export async function handle({ event, resolve }) {
-    const language = event.params.language ?? 'en';
+    let language = event.params.language ?? 'en';
+    if (!languages[language]) {
+        language = 'en';
+    }
     const strings = await import(`./locales/${language}.json`);
 
     const path = event.url.pathname;

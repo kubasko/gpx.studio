@@ -65,7 +65,10 @@
 {#if isChecking}
     <!-- Loading state -->
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-background">
-        <div class="animate-pulse">Loading...</div>
+        <div class="animate-pulse flex flex-col items-center gap-2">
+            <div>Loading...</div>
+            <div class="text-xs text-muted-foreground">Status: Checking Auth...</div>
+        </div>
     </div>
 {:else if !isAuthenticated}
     <!-- Password prompt overlay -->
