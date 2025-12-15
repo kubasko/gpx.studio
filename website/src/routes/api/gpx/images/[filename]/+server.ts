@@ -2,8 +2,7 @@ import { error } from '@sveltejs/kit';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { dev } from '$app/environment';
-
-const LIBRARY_DIR = dev ? 'static/gpx' : 'build/client/gpx';
+import { LIBRARY_DIR } from '$lib/server/config';
 const IMAGES_DIR = path.join(LIBRARY_DIR, 'images');
 
 export async function GET({ params }: { params: { filename: string } }) {

@@ -2,8 +2,8 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { env } from '$env/dynamic/private';
 import { dev } from '$app/environment';
+import { LIBRARY_DIR } from '$lib/server/config';
 
-const LIBRARY_DIR = env.LIBRARY_PATH || (dev ? 'static/gpx' : 'build/client/gpx');
 const DB_FILE = path.join(LIBRARY_DIR, 'library.json');
 
 export async function runMigrations() {

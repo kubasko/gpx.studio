@@ -3,9 +3,9 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { PUBLIC_READ_PASSWORD, PUBLIC_WRITE_PASSWORD } from '$env/static/public';
 import { building, dev } from '$app/environment';
+import { LIBRARY_DIR } from '$lib/server/config';
 
 // In production, files are in build/client/gpx, in dev they're in static/gpx
-const LIBRARY_DIR = dev ? 'static/gpx' : 'build/client/gpx';
 const DB_FILE = path.join(LIBRARY_DIR, 'library.json');
 
 export type MediaLink = {

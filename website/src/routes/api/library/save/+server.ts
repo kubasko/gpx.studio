@@ -5,8 +5,8 @@ import { PUBLIC_READ_PASSWORD, PUBLIC_WRITE_PASSWORD } from '$env/static/public'
 import { dev } from '$app/environment';
 
 import { env } from '$env/dynamic/private';
+import { LIBRARY_DIR } from '$lib/server/config';
 
-const LIBRARY_DIR = env.LIBRARY_PATH || (dev ? 'static/gpx' : 'build/client/gpx');
 const DB_FILE = path.join(LIBRARY_DIR, 'library.json');
 
 // Check if request has write access

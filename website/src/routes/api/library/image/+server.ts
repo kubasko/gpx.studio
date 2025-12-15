@@ -3,8 +3,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { PUBLIC_READ_PASSWORD, PUBLIC_WRITE_PASSWORD } from '$env/static/public';
 import { dev } from '$app/environment';
-
-const LIBRARY_DIR = dev ? 'static/gpx' : 'build/client/gpx';
+import { LIBRARY_DIR } from '$lib/server/config';
 const IMAGES_DIR = path.join(LIBRARY_DIR, 'images');
 const DB_FILE = path.join(LIBRARY_DIR, 'library.json');
 

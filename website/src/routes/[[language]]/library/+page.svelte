@@ -258,10 +258,6 @@
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <h1 class="text-3xl font-bold">Library</h1>
             <div class="flex items-center gap-2">
-                <Button href="/library/calendar" variant="outline" class="gap-2">
-                    <Calendar size="16" />
-                    Calendar
-                </Button>
                 {#if canWrite}
                     <UploadModal onUpload={handleUpload} />
                 {/if}
