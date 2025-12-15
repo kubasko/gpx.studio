@@ -12,6 +12,7 @@
         Calendar as CalendarIcon,
         List,
     } from '@lucide/svelte';
+    import { getPolishHolidays, type Holiday } from '$lib/utils/holidays';
     import PasswordGate from '$lib/components/PasswordGate.svelte';
 
     type LibraryItem = {
@@ -37,6 +38,7 @@
     let loading = $state(true);
     let currentDate = $state(new Date());
     let viewMode = $state<'month' | 'year'>('month');
+    let showHolidays = $state(false);
 
     onMount(async () => {
         await loadItems();
@@ -95,6 +97,20 @@
         });
     }
 
+    function getHolidaysForDate(date: Date): Holiday | undefined {
+        if (!showHolidays) return undefined;
+        const year = date.getFullYear();
+        // Since getPolishHolidays is cheap, we can call it. Optimally we'd cache it.
+        const holidays = getPolishHolidays(year);
+
+        // Use local date components to avoid timezone shifts from toISOString()
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
+
+        return holidays.find((h) => h.date === dateStr);
+    }
+
     // Navigation
     function prevMonth() {
         currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -123,10 +139,13 @@
         const daysInMonth = getDaysInMonth(year, month);
         const firstDay = getFirstDayOfMonth(year, month);
 
+        // Adjust for Monday start: Sun(0) -> 6, Mon(1) -> 0
+        const startDayIndex = (firstDay + 6) % 7;
+
         const days: (number | null)[] = [];
 
         // Add empty cells for days before the first of the month
-        for (let i = 0; i < firstDay; i++) {
+        for (let i = 0; i < startDayIndex; i++) {
             days.push(null);
         }
 
@@ -179,6 +198,15 @@
                 </div>
 
                 <div class="flex items-center gap-2">
+                    <Button
+                        variant={showHolidays ? 'secondary' : 'outline'}
+                        size="sm"
+                        onclick={() => (showHolidays = !showHolidays)}
+                        title="Toggle Polish public holidays"
+                    >
+                        🇵🇱 Holidays
+                    </Button>
+                    <div class="w-px h-6 bg-border mx-1"></div>
                     <Button variant="outline" size="sm" onclick={goToToday}>Today</Button>
                     <Button
                         variant={viewMode === 'month' ? 'default' : 'outline'}
@@ -220,7 +248,7 @@
 
                     <!-- Day Headers -->
                     <div class="grid grid-cols-7 gap-1 mb-2">
-                        {#each ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as day}
+                        {#each ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as day}
                             <div class="text-center text-sm font-medium text-muted-foreground py-2">
                                 {day}
                             </div>
@@ -229,7 +257,7 @@
 
                     <!-- Calendar Grid -->
                     <div class="grid grid-cols-7 gap-1">
-                        {#each calendarDays as day}
+                        {#each calendarDays as day, i}
                             {#if day === null}
                                 <div class="h-24 bg-muted/20 rounded"></div>
                             {:else}
@@ -239,20 +267,33 @@
                                     day
                                 )}
                                 {@const events = getEventsForDate(dateObj)}
+                                {@const holiday = getHolidaysForDate(dateObj)}
+                                <!-- Weekend shading: i % 7 === 5 (Sat) or 6 (Sun) -->
                                 <div
-                                    class="h-24 border rounded p-1 overflow-hidden hover:bg-muted/50 transition-colors {isToday(
-                                        day
-                                    )
-                                        ? 'border-primary border-2'
-                                        : ''}"
+                                    class="h-24 border rounded p-1 overflow-hidden hover:bg-muted/50 transition-colors
+                                    {isToday(day) ? 'border-primary border-2' : ''}
+                                    {i % 7 === 5 || i % 7 === 6 ? 'bg-muted/60' : ''}"
                                 >
-                                    <div
-                                        class="text-sm font-medium mb-1 {isToday(day)
-                                            ? 'text-primary'
-                                            : 'text-muted-foreground'}"
-                                    >
-                                        {day}
+                                    <div class="flex justify-between items-start mb-1">
+                                        <div
+                                            class="text-sm font-medium {isToday(day)
+                                                ? 'text-primary'
+                                                : holiday
+                                                  ? 'text-red-500'
+                                                  : 'text-muted-foreground'}"
+                                        >
+                                            {day}
+                                        </div>
+                                        {#if holiday}
+                                            <div
+                                                class="text-[10px] leading-tight text-red-500 text-right font-medium max-w-[70%] truncate"
+                                                title={holiday.name}
+                                            >
+                                                {holiday.name}
+                                            </div>
+                                        {/if}
                                     </div>
+
                                     <div class="space-y-0.5 overflow-hidden">
                                         {#each events.slice(0, 2) as event}
                                             <a
