@@ -37,7 +37,7 @@
             href={getURLForLanguage(i18n.lang, '/library')}
         >
             <LibraryBig size="18" />
-            Library
+            {i18n._('metadata.library_title')}
         </Button>
         <Button
             variant="link"
@@ -45,7 +45,7 @@
             href={getURLForLanguage(i18n.lang, '/library/calendar')}
         >
             <Calendar size="18" />
-            Calendar
+            {i18n._('metadata.calendar_title')}
         </Button>
         <Button
             variant="link"
@@ -58,7 +58,7 @@
         <div class="ml-auto w-full max-w-xs relative">
             <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-                placeholder="Search library..."
+                placeholder={i18n._('library.search_library')}
                 class="pl-8"
                 onkeydown={(e) => {
                     if (e.key === 'Enter') {

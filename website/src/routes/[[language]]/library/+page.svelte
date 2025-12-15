@@ -256,7 +256,7 @@
 <PasswordGate onAuthenticated={handleAuthChange}>
     <div class="container mx-auto py-8 px-4">
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <h1 class="text-3xl font-bold">Library</h1>
+            <h1 class="text-3xl font-bold capitalize">{i18n._('metadata.library_title')}</h1>
             <div class="flex items-center gap-2">
                 {#if canWrite}
                     <UploadModal onUpload={handleUpload} />
@@ -268,12 +268,12 @@
             <!-- Sidebar / Top bar for filters -->
             <div class="w-full md:w-64 space-y-4 shrink-0">
                 <div class="relative">
-                    <Input placeholder="Search files..." bind:value={search} />
+                    <Input placeholder={i18n._('library.search_placeholder')} bind:value={search} />
                 </div>
 
                 <!-- Category Filter -->
                 <div class="space-y-2">
-                    <h3 class="font-semibold mb-2">Activity</h3>
+                    <h3 class="font-semibold mb-2">{i18n._('toolbar.routing.activity')}</h3>
                     <div class="flex gap-2">
                         <Button
                             variant={selectedCategory === 'cycling' ? 'default' : 'outline'}
@@ -284,7 +284,7 @@
                                     selectedCategory === 'cycling' ? null : 'cycling')}
                         >
                             <Bike size="14" />
-                            Cycling
+                            {i18n._('library.cycling')}
                         </Button>
                         <Button
                             variant={selectedCategory === 'running' ? 'default' : 'outline'}
@@ -295,7 +295,7 @@
                                     selectedCategory === 'running' ? null : 'running')}
                         >
                             <Footprints size="14" />
-                            Running
+                            {i18n._('library.running')}
                         </Button>
                     </div>
                     <Button
@@ -305,7 +305,7 @@
                         onclick={() => (showRacesOnly = !showRacesOnly)}
                     >
                         <Trophy size="14" />
-                        Races Only
+                        {i18n._('library.races_only')}
                     </Button>
                 </div>
 
@@ -316,7 +316,7 @@
                         class="w-full justify-start"
                         onclick={() => (selectedTag = null)}
                     >
-                        All Files
+                        {i18n._('library.all_files')}
                     </Button>
                     {#each allTags as tag}
                         <div class="flex gap-1">

@@ -72,23 +72,27 @@
     <DialogTrigger>
         <Button variant="default" class="gap-2">
             <Plus size="16" />
-            Add Ride
+            {i18n._('library.add_ride')}
         </Button>
     </DialogTrigger>
     <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
-            <DialogTitle>Add New Ride</DialogTitle>
+            <DialogTitle>{i18n._('library.add_ride')}</DialogTitle>
             <DialogDescription>
-                Enter a name for the ride. You can add the GPX file now or later.
+                {i18n._('library.add_ride_description')}
             </DialogDescription>
         </DialogHeader>
         <div class="grid gap-4 py-4">
             <div class="grid gap-2">
-                <Label for="name">Ride Name *</Label>
-                <Input id="name" placeholder="e.g. Mountain Trail 2024" bind:value={name} />
+                <Label for="name">{i18n._('library.ride_name')}</Label>
+                <Input
+                    id="name"
+                    placeholder={i18n._('library.ride_name_placeholder')}
+                    bind:value={name}
+                />
             </div>
             <div class="grid gap-2">
-                <Label for="file">GPX File (optional)</Label>
+                <Label for="file">{i18n._('library.gpx_file_optional')}</Label>
                 <Input
                     id="file"
                     type="file"
@@ -96,18 +100,24 @@
                     onchange={(e) => (file = e.currentTarget.files?.[0] || null)}
                 />
                 <p class="text-xs text-muted-foreground">
-                    You can add or replace the GPX file later from the edit menu.
+                    {i18n._('library.gpx_file_help')}
                 </p>
             </div>
             <div class="grid gap-2">
-                <Label for="tags">Tags</Label>
-                <Input id="tags" placeholder="race, mountains, 2024" bind:value={tags} />
+                <Label for="tags">{i18n._('library.tags')}</Label>
+                <Input
+                    id="tags"
+                    placeholder={i18n._('library.tags_placeholder')}
+                    bind:value={tags}
+                />
             </div>
         </div>
         <DialogFooter>
-            <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
+            <Button variant="outline" onclick={() => (open = false)}
+                >{i18n._('docs.search.cancel')}</Button
+            >
             <Button type="submit" onclick={handleSubmit} disabled={!name.trim() || uploading}>
-                {uploading ? 'Adding...' : 'Add Ride'}
+                {uploading ? i18n._('library.adding') : i18n._('library.add_ride')}
             </Button>
         </DialogFooter>
     </DialogContent>

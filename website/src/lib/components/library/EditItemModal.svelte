@@ -331,26 +331,26 @@
 <Dialog.Root bind:open>
     <Dialog.Content class="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
         <Dialog.Header>
-            <Dialog.Title>Edit File Details</Dialog.Title>
+            <Dialog.Title>{i18n._('library.edit_details')}</Dialog.Title>
             <Dialog.Description>
-                Update name, tags, description, and ride information.
+                {i18n._('library.edit_description')}
             </Dialog.Description>
         </Dialog.Header>
         <div class="grid gap-4 py-4">
             <!-- Custom Name (for all files) -->
             <div class="grid gap-2">
-                <Label for="customName">Display Name</Label>
+                <Label for="customName">{i18n._('library.display_name')}</Label>
                 <Input
                     id="customName"
                     bind:value={customName}
-                    placeholder="Custom name for this file"
+                    placeholder={i18n._('library.custom_name_placeholder')}
                 />
-                <p class="text-xs text-muted-foreground">Leave empty to use original filename</p>
+                <p class="text-xs text-muted-foreground">{i18n._('library.custom_name_help')}</p>
             </div>
 
             <!-- GPX File -->
             <div class="grid gap-2">
-                <Label>GPX File</Label>
+                <Label>{i18n._('library.gpx_file')}</Label>
                 {#if item.filename}
                     <div
                         class="flex items-center justify-between p-3 rounded-lg border bg-muted/30"
@@ -370,24 +370,26 @@
                                     </span>
                                 {/if}
                                 {#if !item.distance && !item.elevation}
-                                    <span class="text-muted-foreground">GPX attached</span>
+                                    <span class="text-muted-foreground"
+                                        >{i18n._('library.gpx_attached')}</span
+                                    >
                                 {/if}
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
                             <Button variant="outline" size="sm" onclick={handleDownload}>
                                 <Download size="14" class="mr-1" />
-                                Download
+                                {i18n._('menu.download_file')}
                             </Button>
                             <label
                                 class="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
                             >
                                 {#if gpxUploading}
                                     <Loader2 size="14" class="animate-spin" />
-                                    Uploading...
+                                    {i18n._('library.uploading')}
                                 {:else}
                                     <FileUp size="14" />
-                                    Replace
+                                    {i18n._('library.replace')}
                                 {/if}
                                 <input
                                     type="file"
@@ -406,11 +408,13 @@
                         <div class="flex flex-col items-center justify-center">
                             {#if gpxUploading}
                                 <Loader2 class="h-6 w-6 text-muted-foreground animate-spin mb-1" />
-                                <p class="text-sm text-muted-foreground">Uploading...</p>
+                                <p class="text-sm text-muted-foreground">
+                                    {i18n._('library.uploading')}
+                                </p>
                             {:else}
                                 <FileUp class="h-6 w-6 text-muted-foreground mb-1" />
                                 <p class="text-sm text-muted-foreground">
-                                    Click to upload GPX file
+                                    {i18n._('library.click_to_upload_gpx')}
                                 </p>
                             {/if}
                         </div>
@@ -430,7 +434,7 @@
 
             <!-- Image Upload -->
             <div class="grid gap-2">
-                <Label>Image / Logo</Label>
+                <Label>{i18n._('library.image_logo')}</Label>
                 {#if image}
                     <div class="relative">
                         <img
@@ -459,12 +463,16 @@
                         <div class="flex flex-col items-center justify-center pt-2 pb-2">
                             {#if imageUploading}
                                 <Loader2 class="h-8 w-8 text-muted-foreground animate-spin mb-1" />
-                                <p class="text-sm text-muted-foreground">Uploading...</p>
+                                <p class="text-sm text-muted-foreground">
+                                    {i18n._('library.uploading')}
+                                </p>
                             {:else}
                                 <ImageIcon class="h-8 w-8 text-muted-foreground mb-1" />
-                                <p class="text-sm text-muted-foreground">Click to upload image</p>
+                                <p class="text-sm text-muted-foreground">
+                                    {i18n._('library.click_to_upload_image')}
+                                </p>
                                 <p class="text-xs text-muted-foreground">
-                                    JPEG, PNG, GIF, WebP (max 5MB)
+                                    {i18n._('library.image_formats')}
                                 </p>
                             {/if}
                         </div>
@@ -482,7 +490,7 @@
                 {/if}
                 {#if image}
                     <div class="flex items-center gap-2">
-                        <span class="text-sm text-muted-foreground">Size:</span>
+                        <span class="text-sm text-muted-foreground">{i18n._('library.size')}:</span>
                         <div class="flex gap-1">
                             <Button
                                 variant={imageSize === 'small' ? 'default' : 'outline'}
@@ -515,7 +523,7 @@
 
             <!-- Activity Category -->
             <div class="grid gap-2">
-                <Label>Activity Type</Label>
+                <Label>{i18n._('library.activity_type')}</Label>
                 <div class="flex gap-2">
                     <Button
                         variant={category === 'cycling' ? 'default' : 'outline'}
@@ -523,7 +531,7 @@
                         class="flex-1 gap-2"
                     >
                         <Bike size="16" />
-                        Cycling
+                        {i18n._('library.cycling')}
                     </Button>
                     <Button
                         variant={category === 'running' ? 'default' : 'outline'}
@@ -531,39 +539,43 @@
                         class="flex-1 gap-2"
                     >
                         <Footprints size="16" />
-                        Running
+                        {i18n._('library.running')}
                     </Button>
                 </div>
             </div>
 
             <!-- Basic Info -->
             <div class="grid gap-2">
-                <Label for="tags">Tags</Label>
-                <Input id="tags" bind:value={tags} placeholder="comma, separated, tags" />
+                <Label for="tags">{i18n._('library.tags')}</Label>
+                <Input
+                    id="tags"
+                    bind:value={tags}
+                    placeholder={i18n._('library.tags_placeholder')}
+                />
             </div>
 
             <div class="grid gap-2">
-                <Label for="desc">Description</Label>
+                <Label for="desc">{i18n._('library.description')}</Label>
                 <Textarea
                     id="desc"
                     bind:value={description}
-                    placeholder="Enter description..."
+                    placeholder={i18n._('library.enter_description')}
                     class="h-20"
                 />
             </div>
 
             <!-- Style Section -->
             <div class="grid gap-2">
-                <Label>Display Style</Label>
+                <Label>{i18n._('library.display_style')}</Label>
                 <div class="flex items-center gap-4 border rounded-md p-3">
                     <div class="flex flex-col gap-1 items-center">
-                        <Label class="text-xs">Color</Label>
+                        <Label class="text-xs">{i18n._('menu.style.color')}</Label>
                         <Input type="color" bind:value={color} class="h-8 w-14 p-0" />
                     </div>
 
                     <div class="flex-1 flex flex-col gap-2">
                         <div class="flex justify-between">
-                            <Label class="text-xs">Opacity</Label>
+                            <Label class="text-xs">{i18n._('menu.style.opacity')}</Label>
                             <span class="text-xs text-muted-foreground"
                                 >{Math.round(opacity * 100)}%</span
                             >
@@ -571,7 +583,7 @@
                         <Slider bind:value={opacity} min={0.1} max={1} step={0.1} type="single" />
 
                         <div class="flex justify-between mt-1">
-                            <Label class="text-xs">Width</Label>
+                            <Label class="text-xs">{i18n._('menu.style.width')}</Label>
                             <span class="text-xs text-muted-foreground">{width}px</span>
                         </div>
                         <Slider bind:value={width} min={1} max={10} step={1} type="single" />
@@ -582,7 +594,9 @@
             <!-- Race Section -->
             <div class="border-t pt-4 mt-2">
                 <div class="flex items-center justify-between mb-4">
-                    <Label for="isRace" class="text-base font-medium">Is this a Race?</Label>
+                    <Label for="isRace" class="text-base font-medium"
+                        >{i18n._('library.is_race')}</Label
+                    >
                     <Switch id="isRace" bind:checked={isRace} />
                 </div>
 
@@ -590,17 +604,17 @@
                     <div class="grid gap-3 pl-1">
                         <div class="grid grid-cols-2 gap-3">
                             <div class="grid gap-2">
-                                <Label for="raceStartDate">Start Date</Label>
+                                <Label for="raceStartDate">{i18n._('library.start_date')}</Label>
                                 <Input id="raceStartDate" type="date" bind:value={raceStartDate} />
                             </div>
                             <div class="grid gap-2">
-                                <Label for="raceEndDate">End Date</Label>
+                                <Label for="raceEndDate">{i18n._('library.end_date')}</Label>
                                 <Input id="raceEndDate" type="date" bind:value={raceEndDate} />
                             </div>
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="raceWebpage">Race Webpage</Label>
+                            <Label for="raceWebpage">{i18n._('library.race_webpage')}</Label>
                             <Input
                                 id="raceWebpage"
                                 type="url"
@@ -610,7 +624,7 @@
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="raceResultsUrl">Results Link</Label>
+                            <Label for="raceResultsUrl">{i18n._('library.results_link')}</Label>
                             <Input
                                 id="raceResultsUrl"
                                 type="url"
@@ -620,7 +634,7 @@
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="raceTrackerUrl">Tracker Link</Label>
+                            <Label for="raceTrackerUrl">{i18n._('library.tracker_link')}</Label>
                             <Input
                                 id="raceTrackerUrl"
                                 type="url"
@@ -630,11 +644,11 @@
                         </div>
 
                         <div class="grid gap-2">
-                            <Label for="raceTips">Race Tips</Label>
+                            <Label for="raceTips">{i18n._('library.race_tips')}</Label>
                             <Textarea
                                 id="raceTips"
                                 bind:value={raceTips}
-                                placeholder="Any tips for this race..."
+                                placeholder={i18n._('library.tips_placeholder')}
                                 class="h-24"
                             />
                         </div>
@@ -645,7 +659,8 @@
             <!-- Media Links Section -->
             <div class="border-t pt-4">
                 <div class="flex items-center justify-between mb-3">
-                    <Label class="text-base font-semibold">Stories & Movies</Label>
+                    <Label class="text-base font-semibold">{i18n._('library.stories_movies')}</Label
+                    >
                     <div class="flex gap-2">
                         <Button
                             variant="outline"
@@ -654,7 +669,7 @@
                             class="h-7 text-xs"
                         >
                             <BookOpen size="14" class="mr-1" />
-                            Add Story
+                            {i18n._('library.add_story')}
                         </Button>
                         <Button
                             variant="outline"
@@ -663,14 +678,14 @@
                             class="h-7 text-xs"
                         >
                             <Film size="14" class="mr-1" />
-                            Add Movie
+                            {i18n._('library.add_movie')}
                         </Button>
                     </div>
                 </div>
 
                 {#if mediaLinks.length === 0}
                     <p class="text-sm text-muted-foreground text-center py-4">
-                        No stories or movies added yet
+                        {i18n._('library.no_stories')}
                     </p>
                 {:else}
                     <div class="space-y-3">
@@ -685,7 +700,7 @@
                                 </div>
                                 <div class="flex-1 space-y-2">
                                     <Input
-                                        placeholder="Title (optional)"
+                                        placeholder={i18n._('library.title_optional')}
                                         value={link.title || ''}
                                         oninput={(e) =>
                                             updateMediaLink(
@@ -703,7 +718,7 @@
                                         class="h-8 text-sm"
                                     />
                                     <Input
-                                        placeholder="Publish date (YYYY-MM-DD, YYYY, or leave empty)"
+                                        placeholder={i18n._('library.publish_date')}
                                         value={link.publishDate || ''}
                                         oninput={(e) =>
                                             updateMediaLink(
@@ -777,10 +792,12 @@
             </div>
         </div>
         <Dialog.Footer>
-            <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
+            <Button variant="outline" onclick={() => (open = false)}
+                >{i18n._('docs.search.cancel')}</Button
+            >
             <Button onclick={handleSave} disabled={loading}>
                 {#if loading}<Loader2 class="mr-2 h-4 w-4 animate-spin" />{/if}
-                Save Changes
+                {i18n._('library.save_changes')}
             </Button>
         </Dialog.Footer>
     </Dialog.Content>

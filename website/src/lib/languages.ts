@@ -8,6 +8,7 @@ export const languages: Record<string, string> = {
     fr: 'Français',
     it: 'Italiano',
     nl: 'Nederlands',
+    pl: 'Polski',
     'pt-BR': 'Português (Brasil)',
     tr: 'Türkçe',
     zh: '简体中文',

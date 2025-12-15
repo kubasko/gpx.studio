@@ -189,7 +189,7 @@
                     <div>
                         <h1 class="text-2xl font-bold flex items-center gap-2">
                             <CalendarIcon size="24" />
-                            Race Calendar
+                            {i18n._('library.race_calendar')}
                         </h1>
                         <p class="text-sm text-muted-foreground">
                             {items.length} races with dates
@@ -204,23 +204,25 @@
                         onclick={() => (showHolidays = !showHolidays)}
                         title="Toggle Polish public holidays"
                     >
-                        🇵🇱 Holidays
+                        🇵🇱 {i18n._('library.holidays')}
                     </Button>
                     <div class="w-px h-6 bg-border mx-1"></div>
-                    <Button variant="outline" size="sm" onclick={goToToday}>Today</Button>
+                    <Button variant="outline" size="sm" onclick={goToToday}
+                        >{i18n._('library.today')}</Button
+                    >
                     <Button
                         variant={viewMode === 'month' ? 'default' : 'outline'}
                         size="sm"
                         onclick={() => (viewMode = 'month')}
                     >
-                        Month
+                        {i18n._('library.month')}
                     </Button>
                     <Button
                         variant={viewMode === 'year' ? 'default' : 'outline'}
                         size="sm"
                         onclick={() => (viewMode = 'year')}
                     >
-                        Year
+                        {i18n._('library.year')}
                     </Button>
                 </div>
             </div>

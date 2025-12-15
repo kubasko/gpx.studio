@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Button } from '$lib/components/ui/button';
     import * as Dialog from '$lib/components/ui/dialog';
+    import { i18n } from '$lib/i18n.svelte';
     import {
         ExternalLink,
         Calendar,
@@ -127,13 +128,13 @@
             {#if item.isRace && formatDateRange()}
                 <div class="flex items-center gap-2 text-sm">
                     <Calendar size="16" class="text-muted-foreground" />
-                    <span class="font-medium">Race Date:</span>
+                    <span class="font-medium">{i18n._('library.race_date')}:</span>
                     <span>{formatDateRange()}</span>
                 </div>
             {:else}
                 <div class="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar size="16" />
-                    <span>Added: {formatDate(item.date)}</span>
+                    <span>{i18n._('library.added')}: {formatDate(item.date)}</span>
                 </div>
             {/if}
 
@@ -147,7 +148,7 @@
                         rel="noopener noreferrer"
                         class="text-primary hover:underline text-sm"
                     >
-                        Race Website
+                        {i18n._('library.race_website')}
                     </a>
                 </div>
             {/if}
@@ -162,7 +163,7 @@
                         rel="noopener noreferrer"
                         class="text-primary hover:underline text-sm"
                     >
-                        Race Results
+                        {i18n._('library.results_link')}
                     </a>
                 </div>
             {/if}
@@ -177,7 +178,7 @@
                         rel="noopener noreferrer"
                         class="text-primary hover:underline text-sm"
                     >
-                        Live Tracker
+                        {i18n._('library.live_tracker')}
                     </a>
                 </div>
             {/if}
@@ -199,7 +200,7 @@
             <!-- Description -->
             {#if item.description}
                 <div class="border-t pt-4">
-                    <h3 class="font-semibold mb-2">Description</h3>
+                    <h3 class="font-semibold mb-2">{i18n._('library.description')}</h3>
                     <p class="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
                         {item.description}
                     </p>
@@ -211,7 +212,7 @@
                 <div class="border-t pt-4">
                     <h3 class="font-semibold mb-2 flex items-center gap-2">
                         <Trophy size="16" class="text-amber-500" />
-                        Race Tips
+                        {i18n._('library.race_tips')}
                     </h3>
                     <p
                         class="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed bg-amber-50 dark:bg-amber-950/20 p-3 rounded-lg border border-amber-200 dark:border-amber-900"
@@ -224,7 +225,7 @@
             <!-- Media Links -->
             {#if item.mediaLinks && item.mediaLinks.length > 0}
                 <div class="border-t pt-4">
-                    <h3 class="font-semibold mb-3">Stories & Movies</h3>
+                    <h3 class="font-semibold mb-3">{i18n._('library.stories_movies')}</h3>
                     <div class="space-y-2">
                         {#each item.mediaLinks as link}
                             <a
@@ -249,7 +250,9 @@
         </div>
 
         <Dialog.Footer class="p-6 pt-0">
-            <Button variant="outline" onclick={() => (open = false)}>Close</Button>
+            <Button variant="outline" onclick={() => (open = false)}
+                >{i18n._('library.close')}</Button
+            >
         </Dialog.Footer>
     </Dialog.Content>
 </Dialog.Root>

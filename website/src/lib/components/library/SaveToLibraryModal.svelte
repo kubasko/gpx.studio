@@ -8,6 +8,7 @@
     import { getAuthHeaders } from '$lib/auth';
     import { fileStateCollection } from '$lib/logic/file-state';
     import { buildGPX, type GPXFile } from 'gpx';
+    import { i18n } from '$lib/i18n.svelte';
 
     // Props
     let {
@@ -170,17 +171,17 @@
             if (res.ok) {
                 successMessage =
                     saveMode === 'overwrite'
-                        ? `Updated "${data.item.name}" in library`
-                        : `Saved as new file "${data.item.name}"`;
+                        ? `${i18n._('library.save_success_update')} "${data.item.name}"`
+                        : `${i18n._('library.save_success_new')} "${data.item.name}"`;
                 // Auto-close after showing success
                 setTimeout(() => {
                     open = false;
                 }, 1500);
             } else {
-                errorMessage = data.error || 'Failed to save';
+                errorMessage = data.error || i18n._('library.save_error');
             }
         } catch {
-            errorMessage = 'Failed to save to library';
+            errorMessage = i18n._('library.save_error');
         } finally {
             loading = false;
         }
@@ -226,18 +227,18 @@
         <Dialog.Header>
             <Dialog.Title class="flex items-center gap-2">
                 <Library size="20" />
-                Save to Library
+                {i18n._('library.save_to_library')}
             </Dialog.Title>
-            <Dialog.Description>Save the current file to your library.</Dialog.Description>
+            <Dialog.Description>{i18n._('library.save_to_library_desc')}</Dialog.Description>
         </Dialog.Header>
 
         <div class="grid gap-4 py-4">
             {#if currentFiles.length === 0}
-                <p class="text-sm text-muted-foreground">No files open to save.</p>
+                <p class="text-sm text-muted-foreground">{i18n._('library.no_files_open')}</p>
             {:else}
                 <!-- File Selection -->
                 <div class="grid gap-2">
-                    <Label>Select file to save</Label>
+                    <Label>{i18n._('library.select_file_save')}</Label>
                     <div class="flex flex-wrap gap-2">
                         {#each currentFiles as file}
                             <Button
@@ -253,18 +254,18 @@
 
                 <!-- Save Mode -->
                 <div class="grid gap-2">
-                    <Label>Save mode</Label>
+                    <Label>{i18n._('library.save_mode')}</Label>
                     <RadioGroup.Root bind:value={saveMode}>
                         <div class="flex items-center space-x-2">
                             <RadioGroup.Item value="new" id="mode-new" />
                             <Label for="mode-new" class="font-normal cursor-pointer">
-                                Save as new file
+                                {i18n._('library.save_as_new')}
                             </Label>
                         </div>
                         <div class="flex items-center space-x-2">
                             <RadioGroup.Item value="overwrite" id="mode-overwrite" />
                             <Label for="mode-overwrite" class="font-normal cursor-pointer">
-                                Overwrite existing library file
+                                {i18n._('library.overwrite_existing')}
                             </Label>
                         </div>
                     </RadioGroup.Root>
@@ -273,15 +274,17 @@
                 <!-- New Filename Input -->
                 {#if saveMode === 'new'}
                     <div class="grid gap-2">
-                        <Label for="filename">Filename</Label>
+                        <Label for="filename">{i18n._('library.filename')}</Label>
                         <Input id="filename" bind:value={newFilename} placeholder="my-route.gpx" />
                     </div>
                 {:else if saveMode === 'overwrite'}
                     <!-- Library Item Selection -->
                     <div class="grid gap-2">
-                        <Label>Select library file to overwrite</Label>
+                        <Label>{i18n._('library.select_file_overwrite')}</Label>
                         {#if libraryItems.length === 0}
-                            <p class="text-sm text-muted-foreground">No files in library.</p>
+                            <p class="text-sm text-muted-foreground">
+                                {i18n._('library.no_files_library')}
+                            </p>
                         {:else}
                             <div class="max-h-40 overflow-y-auto border rounded-md p-2 space-y-1">
                                 {#each libraryItems as item}
@@ -312,14 +315,16 @@
         </div>
 
         <Dialog.Footer>
-            <Button variant="outline" onclick={() => (open = false)}>Cancel</Button>
+            <Button variant="outline" onclick={() => (open = false)}
+                >{i18n._('docs.search.cancel')}</Button
+            >
             <Button onclick={handleSave} disabled={!canSave}>
                 {#if loading}
                     <Loader2 class="h-4 w-4 animate-spin mr-2" />
                 {:else}
                     <Save class="h-4 w-4 mr-2" />
                 {/if}
-                Save
+                {i18n._('library.save')}
             </Button>
         </Dialog.Footer>
     </Dialog.Content>
