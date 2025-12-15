@@ -70,7 +70,13 @@
     ],
     "distance": 566,
     "elevation": 11822,
-    "country": "Polska"
+    "country": "Polska",
+    "organizers": [
+      {
+        "name": "Koło Ultra",
+        "url": "https://kolo-ultra.pl/"
+      }
+    ]
   },
   {
     "id": "f2d3e3c4-6096-4ca1-b7f0-e6f91b8c8fdc",
@@ -204,7 +210,13 @@
     "raceTips": "Ride Forest RIde",
     "raceResultsUrl": "https://sudovia.gravel.love/2025/05/16/wyniki-2025/",
     "imageSize": "medium",
-    "mediaLinks": []
+    "mediaLinks": [],
+    "organizers": [
+      {
+        "name": "Paweł Kuflikowski Gravel.Love",
+        "url": "https://gravel.love/"
+      }
+    ]
   },
   {
     "id": "9e6545ac-41e2-48eb-a8c7-7311167c3b2f",
@@ -298,6 +310,12 @@
     "image": "0fd4c7a1-353d-47b5-9714-b718335782c0-1765740860147.jpeg",
     "raceWebpage": "https://www.ultralemkowyna.pl/trasy/lemkowyna-trail-150",
     "raceResultsUrl": "https://www.ultralemkowyna.pl/wyniki",
-    "raceTrackerUrl": "https://poltrax.pl/lemko150"
+    "raceTrackerUrl": "https://poltrax.pl/lemko150",
+    "organizers": [
+      {
+        "name": "Fundacja Ultra",
+        "url": "https://www.ultralemkowyna.pl/o-nas/kontakt"
+      }
+    ]
   }
 ]
