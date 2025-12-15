@@ -1,9 +1,9 @@
 <script lang="ts">
     import Logo from '$lib/components/Logo.svelte';
     import { Button } from '$lib/components/ui/button';
-    import AlgoliaDocSearch from '$lib/components/AlgoliaDocSearch.svelte';
+    import { Input } from '$lib/components/ui/input';
     import ModeSwitch from '$lib/components/ModeSwitch.svelte';
-    import { BookOpenText, House, Map, LibraryBig, Calendar } from '@lucide/svelte';
+    import { BookOpenText, House, Map, LibraryBig, Calendar, Search } from '@lucide/svelte';
     import { i18n } from '$lib/i18n.svelte';
     import { getURLForLanguage } from '$lib/utils';
 </script>
@@ -55,7 +55,23 @@
             <BookOpenText size="18" />
             {i18n._('menu.help')}
         </Button>
-        <AlgoliaDocSearch class="ml-auto" />
+        <div class="ml-auto w-full max-w-xs relative">
+            <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+                placeholder="Search library..."
+                class="pl-8"
+                onkeydown={(e) => {
+                    if (e.key === 'Enter') {
+                        const target = e.currentTarget as HTMLInputElement;
+                        window.location.href = getURLForLanguage(
+                            i18n.lang,
+                            `/library?search=${encodeURIComponent(target.value)}`
+                        );
+                    }
+                }}
+            />
+        </div>
+
         <ModeSwitch class="hidden xs:inline-flex" />
     </div>
 </nav>

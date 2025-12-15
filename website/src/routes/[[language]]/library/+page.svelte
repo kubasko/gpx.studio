@@ -94,7 +94,7 @@
 
     let items = $state<LibraryItem[]>([]);
     let filteredItems = $state<LibraryItem[]>([]);
-    let search = $state('');
+    let search = $state(page.url.searchParams.get('search') || '');
     let selectedTag = $state<string | null>(null);
     let selectedCategory = $state<'cycling' | 'running' | null>(null);
     let showRacesOnly = $state(false);
@@ -406,24 +406,15 @@
                                     <div class="flex items-center justify-between mb-1">
                                         <div class="flex items-center gap-2 min-w-0 flex-1">
                                             {#if item.category === 'cycling'}
-                                                <Bike
-                                                    size="14"
-                                                    class="text-blue-500 shrink-0"
-                                                    title="Cycling"
-                                                />
+                                                <Bike size="14" class="text-blue-500 shrink-0" />
                                             {:else if item.category === 'running'}
                                                 <Footprints
                                                     size="14"
                                                     class="text-green-500 shrink-0"
-                                                    title="Running"
                                                 />
                                             {/if}
                                             {#if item.isRace}
-                                                <Trophy
-                                                    size="14"
-                                                    class="text-amber-500 shrink-0"
-                                                    title="Race"
-                                                />
+                                                <Trophy size="14" class="text-amber-500 shrink-0" />
                                             {/if}
                                             <h3
                                                 class="font-semibold text-base truncate"

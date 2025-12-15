@@ -1,7 +1,7 @@
 {
     "metadata": {
         "home_title": "the online GPX file editor",
-        "app_title": "app",
+        "app_title": "map",
         "library_title": "library",
         "calendar_title": "calendar",
         "embed_title": "the online GPX file editor",
@@ -482,7 +482,7 @@
     "homepage": {
         "website": "Website",
         "home": "Home",
-        "app": "App",
+        "app": "Map",
         "contact": "Contact",
         "reddit": "Reddit",
         "facebook": "Facebook",
