@@ -2,6 +2,7 @@
     "metadata": {
         "home_title": "the online GPX file editor",
         "app_title": "map",
+        "name": "Name",
         "library_title": "Library",
         "calendar_title": "Calendar",
         "embed_title": "the online GPX file editor",
@@ -71,7 +72,7 @@
         "race_date": "Race Date",
         "race_website": "Race Website",
         "live_tracker": "Live Tracker",
-        "added": "Added",
+        "added": "Date",
         "save_to_library": "Save to Library",
         "save_to_library_desc": "Save the current file to your library.",
         "no_files_open": "No files open to save.",

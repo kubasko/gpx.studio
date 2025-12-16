@@ -182,14 +182,14 @@
     <div class="min-h-screen bg-background">
         <div class="container mx-auto py-6 px-4 max-w-6xl">
             <!-- Header -->
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div class="flex items-center gap-4">
-                    <Button href="/library" variant="ghost" size="icon">
+                    <Button href="/library" variant="ghost" size="icon" class="shrink-0">
                         <ArrowLeft size="20" />
                     </Button>
                     <div>
-                        <h1 class="text-2xl font-bold flex items-center gap-2">
-                            <CalendarIcon size="24" />
+                        <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                            <CalendarIcon size="24" class="shrink-0" />
                             {i18n._('library.race_calendar')}
                         </h1>
                         <p class="text-sm text-muted-foreground">
@@ -198,7 +198,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <Button
                         variant={showHolidays ? 'secondary' : 'outline'}
                         size="sm"
@@ -207,24 +207,28 @@
                     >
                         🇵🇱 {i18n._('library.holidays')}
                     </Button>
-                    <div class="w-px h-6 bg-border mx-1"></div>
+                    <div class="w-px h-6 bg-border mx-1 hidden md:block"></div>
                     <Button variant="outline" size="sm" onclick={goToToday}
                         >{i18n._('library.today')}</Button
                     >
-                    <Button
-                        variant={viewMode === 'month' ? 'default' : 'outline'}
-                        size="sm"
-                        onclick={() => (viewMode = 'month')}
-                    >
-                        {i18n._('library.month')}
-                    </Button>
-                    <Button
-                        variant={viewMode === 'year' ? 'default' : 'outline'}
-                        size="sm"
-                        onclick={() => (viewMode = 'year')}
-                    >
-                        {i18n._('library.year')}
-                    </Button>
+                    <div class="flex rounded-md border bg-muted p-1">
+                        <Button
+                            variant={viewMode === 'month' ? 'default' : 'ghost'}
+                            size="sm"
+                            class="h-7 px-2"
+                            onclick={() => (viewMode = 'month')}
+                        >
+                            {i18n._('library.month')}
+                        </Button>
+                        <Button
+                            variant={viewMode === 'year' ? 'default' : 'ghost'}
+                            size="sm"
+                            class="h-7 px-2"
+                            onclick={() => (viewMode = 'year')}
+                        >
+                            {i18n._('library.year')}
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -336,7 +340,9 @@
                     </div>
 
                     <!-- 12 Month Grid -->
-                    <div class="grid grid-cols-3 md:grid-cols-4 gap-4">
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                    >
                         {#each Array(12) as _, month}
                             {@const events = getEventsForMonth(year, month)}
                             <button

@@ -149,45 +149,69 @@
     {:else if item}
         <div class="container mx-auto py-6 px-4 max-w-6xl">
             <!-- Header -->
-            <div class="flex items-center gap-4 mb-6">
-                <Button href="/library" variant="ghost" size="icon">
-                    <ArrowLeft size="20" />
-                </Button>
-                <div class="flex-1">
-                    <div class="flex items-center gap-2">
-                        {#if item.category === 'cycling'}
-                            <Bike size="20" class="text-blue-500" />
-                        {:else if item.category === 'running'}
-                            <Footprints size="20" class="text-green-500" />
-                        {/if}
-                        {#if item.isRace}
-                            <Trophy size="20" class="text-amber-500" />
-                        {/if}
-                        <h1 class="text-2xl font-bold">{getDisplayName(item)}</h1>
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-4 flex-1 min-w-0">
+                    <Button href="/library" variant="ghost" size="icon" class="shrink-0">
+                        <ArrowLeft size="20" />
+                    </Button>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            {#if item.category === 'cycling'}
+                                <Bike size="20" class="text-blue-500 shrink-0" />
+                            {:else if item.category === 'running'}
+                                <Footprints size="20" class="text-green-500 shrink-0" />
+                            {/if}
+                            {#if item.isRace}
+                                <Trophy size="20" class="text-amber-500 shrink-0" />
+                            {/if}
+                            <h1 class="text-xl md:text-2xl font-bold truncate">
+                                {getDisplayName(item)}
+                            </h1>
+                        </div>
+                        <p class="text-sm text-muted-foreground">{formatDateRange(item)}</p>
                     </div>
-                    <p class="text-sm text-muted-foreground">{formatDateRange(item)}</p>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2 md:justify-end">
                     {#if item.filename}
-                        <Button variant="outline" onclick={handleDownload}>
+                        <Button
+                            variant="outline"
+                            onclick={handleDownload}
+                            class="flex-1 md:flex-none"
+                        >
                             <Download size="16" class="mr-2" />
-                            Download GPX
+                            GPX
                         </Button>
                     {/if}
                     {#if item.raceWebpage}
-                        <Button variant="outline" href={item.raceWebpage} target="_blank">
+                        <Button
+                            variant="outline"
+                            href={item.raceWebpage}
+                            target="_blank"
+                            class="flex-1 md:flex-none"
+                        >
                             <ExternalLink size="16" class="mr-2" />
-                            Race Website
+                            Website
                         </Button>
                     {/if}
                     {#if item.raceTrackerUrl}
-                        <Button variant="outline" href={item.raceTrackerUrl} target="_blank">
+                        <Button
+                            variant="outline"
+                            href={item.raceTrackerUrl}
+                            target="_blank"
+                            class="flex-1 md:flex-none"
+                        >
                             <Radio size="16" class="mr-2 text-green-500" />
-                            Live Tracker
+                            Tracker
                         </Button>
                     {/if}
                     {#if item.raceResultsUrl}
-                        <Button variant="outline" href={item.raceResultsUrl} target="_blank">
+                        <Button
+                            variant="outline"
+                            href={item.raceResultsUrl}
+                            target="_blank"
+                            class="flex-1 md:flex-none"
+                        >
                             <Medal size="16" class="mr-2 text-amber-500" />
                             Results
                         </Button>
@@ -200,7 +224,7 @@
                 <div class="flex flex-col md:flex-row">
                     <!-- Image -->
                     {#if item.image}
-                        <div class="w-full md:w-64 h-48 md:h-auto shrink-0">
+                        <div class="w-full md:w-64 h-64 md:h-auto shrink-0">
                             <img
                                 src="/api/gpx/images/{item.image}"
                                 alt={getDisplayName(item)}
@@ -288,9 +312,9 @@
                     <iframe
                         src={getEmbedUrl(item)}
                         width="100%"
-                        height="700"
                         frameborder="0"
                         style="outline: none;"
+                        class="w-full h-[60vh] md:h-[700px]"
                         title="GPX Map"
                     ></iframe>
                 </div>

@@ -1,7 +1,8 @@
 {
     "metadata": {
-        "home_title": "edytor online plików GPX",
-        "app_title": "Aplikacja",
+        "home_title": "edytor plików GPX online",
+        "app_title": "mapa",
+        "name": "Nazwa",
         "embed_title": "Online'owy edytor plików GPX",
         "help_title": "pomoc",
         "404_title": "nie odnaleziono strony",
@@ -71,7 +72,7 @@
         "race_date": "Data wyścigu",
         "race_website": "Strona wyścigu",
         "live_tracker": "Śledzenie na żywo",
-        "added": "Dodano",
+        "added": "Data",
         "save_to_library": "Zapisz w bibliotece",
         "save_to_library_desc": "Zapisz bieżący plik w swojej bibliotece.",
         "no_files_open": "Brak otwartych plików do zapisania.",

@@ -32,6 +32,9 @@
         Calendar,
         LayoutGrid,
         List,
+        ArrowUp,
+        ArrowDown,
+        ArrowUpDown,
     } from '@lucide/svelte';
     import { getAuthHeaders, hasWriteAccess } from '$lib/auth';
     import * as Dialog from '$lib/components/ui/dialog';
@@ -110,6 +113,8 @@
     let viewingItem = $state<LibraryItem | null>(null);
     let isViewing = $state(false);
     let viewMode = $state<'grid' | 'list'>('grid');
+    let sortField = $state<'name' | 'date' | 'distance' | 'elevation'>('date');
+    let sortDirection = $state<'asc' | 'desc'>('desc');
     let shareModalOpen = $state(false);
     let sharedLink = $state('');
     let canWrite = $state(false);
@@ -186,26 +191,64 @@
         }
 
         // Sort: by race start date (newest first), then by name
+        // Sort items
         res = res.sort((a, b) => {
-            const dateA = a.raceStartDate || a.date || '';
-            const dateB = b.raceStartDate || b.date || '';
-            // Sort by date descending (newest first)
-            if (dateA !== dateB) {
-                return dateB.localeCompare(dateA);
+            let valA: any = '';
+            let valB: any = '';
+
+            switch (sortField) {
+                case 'name':
+                    valA = (a.customName || a.name).toLowerCase();
+                    valB = (b.customName || b.name).toLowerCase();
+                    break;
+                case 'date':
+                    valA = a.raceStartDate || a.date || '';
+                    valB = b.raceStartDate || b.date || '';
+                    break;
+                case 'distance':
+                    valA = a.distance || 0;
+                    valB = b.distance || 0;
+                    break;
+                case 'elevation':
+                    valA = a.elevation || 0;
+                    valB = b.elevation || 0;
+                    break;
             }
-            // Then by name ascending
-            const nameA = (a.customName || a.name).toLowerCase();
-            const nameB = (b.customName || b.name).toLowerCase();
-            return nameA.localeCompare(nameB);
+
+            if (valA === valB) return 0;
+            const result = valA < valB ? -1 : 1;
+            return sortDirection === 'asc' ? result : -result;
         });
 
         filteredItems = res;
     });
 
     onMount(() => {
+        const storedView = localStorage.getItem('libraryViewMode');
+        if (storedView === 'list' || storedView === 'grid') {
+            viewMode = storedView;
+        }
         fetchLibrary();
         canWrite = hasWriteAccess();
     });
+
+    $effect(() => {
+        if (viewMode) {
+            localStorage.setItem('libraryViewMode', viewMode);
+        }
+    });
+
+    function toggleSort(field: typeof sortField) {
+        if (sortField === field) {
+            sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortField = field;
+            sortDirection = 'asc'; // Default to asc when switching fields (except maybe date?)
+            if (field === 'date' || field === 'distance' || field === 'elevation') {
+                sortDirection = 'desc'; // Default to desc for numeric/date
+            }
+        }
+    }
 
     function handleAuthChange() {
         // Re-check write access when authentication changes
@@ -471,19 +514,87 @@
                             <thead class="bg-muted/50 border-b">
                                 <tr>
                                     <th class="h-10 px-4 text-left font-medium w-16"></th>
-                                    <th class="h-10 px-4 text-left font-medium"
-                                        >{i18n._('metadata.name')}</th
+                                    <th
+                                        class="h-10 px-4 text-left font-medium cursor-pointer hover:bg-muted transition-colors select-none"
+                                        onclick={() => toggleSort('name')}
                                     >
-                                    <th class="h-10 px-4 text-left font-medium w-32"
-                                        >{i18n._('library.added')}</th
+                                        <div class="flex items-center gap-1">
+                                            {i18n._('metadata.name')}
+                                            {#if sortField === 'name'}
+                                                {#if sortDirection === 'asc'}
+                                                    <ArrowUp size="12" />
+                                                {:else}
+                                                    <ArrowDown size="12" />
+                                                {/if}
+                                            {:else}
+                                                <ArrowUpDown
+                                                    size="12"
+                                                    class="text-muted-foreground/50"
+                                                />
+                                            {/if}
+                                        </div>
+                                    </th>
+                                    <th
+                                        class="h-10 px-4 text-left font-medium w-32 cursor-pointer hover:bg-muted transition-colors select-none"
+                                        onclick={() => toggleSort('date')}
                                     >
-                                    <th class="h-10 px-4 text-right font-medium w-24"
-                                        >{i18n._('quantities.distance')}</th
+                                        <div class="flex items-center gap-1">
+                                            {i18n._('library.added')}
+                                            {#if sortField === 'date'}
+                                                {#if sortDirection === 'asc'}
+                                                    <ArrowUp size="12" />
+                                                {:else}
+                                                    <ArrowDown size="12" />
+                                                {/if}
+                                            {:else}
+                                                <ArrowUpDown
+                                                    size="12"
+                                                    class="text-muted-foreground/50"
+                                                />
+                                            {/if}
+                                        </div>
+                                    </th>
+                                    <th
+                                        class="h-10 px-4 text-right font-medium w-24 cursor-pointer hover:bg-muted transition-colors select-none"
+                                        onclick={() => toggleSort('distance')}
                                     >
-                                    <th class="h-10 px-4 text-right font-medium w-24"
-                                        >{i18n._('quantities.elevation')}</th
+                                        <div class="flex items-center justify-end gap-1">
+                                            {i18n._('quantities.distance')}
+                                            {#if sortField === 'distance'}
+                                                {#if sortDirection === 'asc'}
+                                                    <ArrowUp size="12" />
+                                                {:else}
+                                                    <ArrowDown size="12" />
+                                                {/if}
+                                            {:else}
+                                                <ArrowUpDown
+                                                    size="12"
+                                                    class="text-muted-foreground/50"
+                                                />
+                                            {/if}
+                                        </div>
+                                    </th>
+                                    <th
+                                        class="h-10 px-4 text-right font-medium w-24 cursor-pointer hover:bg-muted transition-colors select-none"
+                                        onclick={() => toggleSort('elevation')}
                                     >
-                                    <th class="h-10 px-4 text-right font-medium w-32"></th>
+                                        <div class="flex items-center justify-end gap-1">
+                                            {i18n._('quantities.elevation')}
+                                            {#if sortField === 'elevation'}
+                                                {#if sortDirection === 'asc'}
+                                                    <ArrowUp size="12" />
+                                                {:else}
+                                                    <ArrowDown size="12" />
+                                                {/if}
+                                            {:else}
+                                                <ArrowUpDown
+                                                    size="12"
+                                                    class="text-muted-foreground/50"
+                                                />
+                                            {/if}
+                                        </div>
+                                    </th>
+                                    <th class="h-10 px-4 text-right font-medium min-w-[160px]"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y">
@@ -509,15 +620,6 @@
                                                 >
                                                     {getDisplayName(item)}
                                                 </a>
-                                                {#if item.raceWebpage}
-                                                    <a
-                                                        href={item.raceWebpage}
-                                                        target="_blank"
-                                                        class="text-muted-foreground hover:text-foreground"
-                                                    >
-                                                        <ExternalLink size="12" />
-                                                    </a>
-                                                {/if}
                                             </div>
                                         </td>
                                         <td class="p-4 text-muted-foreground whitespace-nowrap">
@@ -537,6 +639,42 @@
                                         </td>
                                         <td class="p-4 text-right">
                                             <div class="flex items-center justify-end gap-1">
+                                                {#if item.raceTrackerUrl}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        class="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                        href={item.raceTrackerUrl}
+                                                        target="_blank"
+                                                        title="Live Tracker"
+                                                    >
+                                                        <Radio size="14" />
+                                                    </Button>
+                                                {/if}
+                                                {#if item.raceWebpage}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        class="h-8 w-8"
+                                                        href={item.raceWebpage}
+                                                        target="_blank"
+                                                        title="Visit race webpage"
+                                                    >
+                                                        <ExternalLink size="14" />
+                                                    </Button>
+                                                {/if}
+                                                {#if item.raceResultsUrl}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        class="h-8 w-8 text-amber-500 hover:text-amber-600 hover:bg-amber-50"
+                                                        href={item.raceResultsUrl}
+                                                        target="_blank"
+                                                        title="Race Results"
+                                                    >
+                                                        <Medal size="14" />
+                                                    </Button>
+                                                {/if}
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
@@ -574,6 +712,17 @@
                                                 >
                                                     <Download size="14" />
                                                 </Button>
+                                                {#if canWrite}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        class="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                                        onclick={() => handleDelete(item)}
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size="14" />
+                                                    </Button>
+                                                {/if}
                                             </div>
                                         </td>
                                     </tr>
@@ -686,20 +835,20 @@
                                             >
                                                 <Download size="12" />
                                             </Button>
-                                        {#if canWrite}
-                                            <Button
-                                                variant="secondary"
-                                                size="icon"
-                                                class="h-6 w-6 shadow-sm bg-background/80 hover:bg-background text-destructive hover:text-destructive"
-                                                onclick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleDelete(item);
-                                                }}
-                                                title="Delete"
-                                            >
-                                                <Trash2 size="12" />
-                                            </Button>
-                                        {/if}
+                                            {#if canWrite}
+                                                <Button
+                                                    variant="secondary"
+                                                    size="icon"
+                                                    class="h-6 w-6 shadow-sm bg-background/80 hover:bg-background text-destructive hover:text-destructive"
+                                                    onclick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDelete(item);
+                                                    }}
+                                                    title="Delete"
+                                                >
+                                                    <Trash2 size="12" />
+                                                </Button>
+                                            {/if}
                                         </div>
                                     </div>
                                 {:else}
