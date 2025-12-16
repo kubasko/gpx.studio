@@ -55,6 +55,7 @@ export function isPasswordProtectionEnabled(): boolean {
  * Check if user has at least read access
  */
 export function hasReadAccess(): boolean {
+    if (!isPasswordProtectionEnabled()) return true;
     const level = getAccessLevel();
     return level === 'read' || level === 'write';
 }
@@ -63,6 +64,7 @@ export function hasReadAccess(): boolean {
  * Check if user has write access
  */
 export function hasWriteAccess(): boolean {
+    if (!isPasswordProtectionEnabled()) return true;
     return getAccessLevel() === 'write';
 }
 

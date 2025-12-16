@@ -87,7 +87,8 @@
         "save_success_update": "Zaktualizowano plik w bibliotece",
         "save_error": "Nie udało się zapisać",
         "close": "Zamknij",
-        "save": "Zapisz"
+        "save": "Zapisz",
+        "country": "Kraj"
     },
     "menu": {
         "new": "Nowy",

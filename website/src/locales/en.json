@@ -87,7 +87,8 @@
         "save_success_update": "Updated file in library",
         "save_error": "Failed to save",
         "close": "Close",
-        "save": "Save"
+        "save": "Save",
+        "country": "Country"
     },
     "menu": {
         "new": "New",
