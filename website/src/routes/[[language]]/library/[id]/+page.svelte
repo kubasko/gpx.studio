@@ -265,6 +265,7 @@
                         </div>
 
                         <!-- Tags inline -->
+                        <!-- Tags inline (Hidden as per user request)
                         {#if item.tags.length > 0}
                             <div class="flex flex-wrap gap-2 mt-4">
                                 {#each item.tags as tag}
@@ -276,6 +277,7 @@
                                 {/each}
                             </div>
                         {/if}
+                        -->
                     </div>
                 </div>
             </div>
